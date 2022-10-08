@@ -2,54 +2,21 @@ package utils
 
 import (
 	"database/sql"
-	"github.com/spf13/viper"
-	"path/filepath"
 )
 
-type StoredProcedureParameter struct {
-	RoutineName      string
-	RoutineSchema    string
-	SpecificName     string
-	ParameterName    string
-	ParameterMode    string
-	DataType         string
-	UdtName          string
-	ParameterDefault sql.NullString
-}
-
+// StoredProcedure stored procedures types
 type StoredProcedure struct {
 	Name       string
 	Parameters []StoredProcedureParameter
 }
 
-type CustomTypeAttr struct {
-	AttrName         string
-	TypeName         string
-	TypeCategory     string
-	AttrTypeName     string
-	AttrTypeCategory string
-}
-
-type CustomTypes struct {
-	Name         string
-	TypeCategory string
-}
-
 func (sp *StoredProcedure) ToJsonSchema() JSONSchemaBase {
-	schema := viper.GetString("jsonSchema.schema")
-	path := viper.GetString("jsonSchema.targetPath")
-
-	id := filepath.Join(path, sp.Name+".schema"+".json")
-
 	return JSONSchemaBase{
-		Schema:      schema,
-		Id:          id,
-		Title:       sp.Name,
-		Name:        sp.Name + ".schema" + ".json",
+		Id:          sp.Name,
 		Description: "An application route",
 		Required:    sp.getRequiredProperties(),
 		Properties:  sp.getProperties(),
-		SchemaType:  "object",
+		SchemaType:  Object,
 	}
 }
 
@@ -82,4 +49,40 @@ func (sp *StoredProcedure) getProperties() JSONSchemaProperties {
 	}
 
 	return properties
+}
+
+// StoredProcedureParameter An Attribute belonging to a stored procedure as defined in the database
+type StoredProcedureParameter struct {
+	RoutineName      string
+	RoutineSchema    string
+	SpecificName     string
+	ParameterName    string
+	ParameterMode    string
+	DataType         string
+	UdtName          string
+	ParameterDefault sql.NullString
+}
+
+// CustomTypeAttr An Attribute belonging to a custom type as defined in the db
+type CustomTypeAttr struct {
+	AttrName         string
+	TypeName         string
+	TypeCategory     PostgresTypeCategory
+	AttrTypeName     string
+	AttrTypeCategory PostgresTypeCategory
+}
+
+// CustomTypeAttrs A slice of CustomTypeAttr with methods
+type CustomTypeAttrs []CustomTypeAttr
+
+func (attrs CustomTypeAttrs) ToJsonSchemaProperties() JSONSchemaProperties {
+	properties := make(JSONSchemaProperties)
+	for _, attr := range attrs {
+		properties[attr.AttrName] = JSONSchemaProperty{
+			Type: string(attr.AttrTypeCategory.ToJsonType()),
+		}
+	}
+
+	return properties
+
 }

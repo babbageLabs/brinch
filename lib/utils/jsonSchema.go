@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
 type SchemaType string
+type Schemas []JSONSchemaBase
 
 const (
 	String  SchemaType = "string"
@@ -23,7 +26,7 @@ const (
 	Null               = "null"
 )
 
-func (s SchemaType) String() (string, error) {
+func (s SchemaType) ToString() (string, error) {
 	switch s {
 	case String:
 		return "string", nil
@@ -65,6 +68,8 @@ type JSONSchemaBase struct {
 func (jsonInput *JSONSchemaBase) ToFile() {
 	dirPath := viper.GetString("jsonSchema.targetPath")
 	port := viper.GetString("jsonSchema.server.port")
+	jsonInput.AppendDefaultProperties()
+
 	filePath := jsonInput.Id
 	fmt.Printf("file path is %s\n", filePath)
 
@@ -93,24 +98,48 @@ func (jsonInput *JSONSchemaBase) ToFile() {
 	}
 }
 
-func (jsonInput *JSONSchemaBase) ResolvePropertyTypes(customTypes map[string]CustomTypes) {
-	dirPath := viper.GetString("jsonSchema.targetPath")
-	port := viper.GetString("jsonSchema.server.port")
-	if dirPath == "" {
+func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
+	schema := viper.GetString("jsonSchema.schema")
+	path := viper.GetString("jsonSchema.targetPath")
+
+	if path == "" {
 		path, err := os.Getwd()
 		cobra.CheckErr(err)
 
-		dirPath = filepath.Join(path, "api", "json")
+		path = filepath.Join(path, "schema", "json")
 	}
 
-	for key, props := range jsonInput.Properties {
-		if props.Type != "" && props.Ref == "" {
-			typ, ok := customTypes[props.Type]
-			if ok {
-				jsonInput.Properties[key] = JSONSchemaProperty{
-					Ref: "http://localhost:" + port + "/" + typ.Name + ".schema.json",
-				}
-			}
-		}
+	jsonInput.Schema = schema
+	jsonInput.Name = jsonInput.Id + ".schema" + ".json"
+	jsonInput.Title = cases.Title(language.English, cases.Compact).String(jsonInput.Id)
+	jsonInput.Id = filepath.Join(path, jsonInput.Name)
+
+}
+
+//func (jsonInput *JSONSchemaBase) ResolvePropertyTypes(customTypes map[string]CustomTypes) {
+//	dirPath := viper.GetString("jsonSchema.targetPath")
+//	port := viper.GetString("jsonSchema.server.port")
+//	if dirPath == "" {
+//		path, err := os.Getwd()
+//		cobra.CheckErr(err)
+//
+//		dirPath = filepath.Join(path, "api", "json")
+//	}
+//
+//	for key, props := range jsonInput.Properties {
+//		if props.Type != "" && props.Ref == "" {
+//			typ, ok := customTypes[props.Type]
+//			if ok {
+//				jsonInput.Properties[key] = JSONSchemaProperty{
+//					Ref: "http://localhost:" + port + "/" + typ.Name + ".schema.json",
+//				}
+//			}
+//		}
+//	}
+//}
+
+func (schemas Schemas) Export() {
+	for _, schema := range schemas {
+		schema.ToFile()
 	}
 }

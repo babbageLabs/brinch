@@ -8,9 +8,56 @@ import (
 	"github.com/spf13/viper"
 )
 
-type QueryHandler func(rows pgx.Rows)
+type PostgresTypeCategory string
 
-func QueryDB(query *string, handler QueryHandler) {
+const (
+	ArrayType      PostgresTypeCategory = "A"
+	BooleanType                         = "B"
+	CompositeType                       = "C"
+	DateType                            = "D"
+	EnumType                            = "E"
+	GeometricType                       = "G"
+	NetworkType                         = "I"
+	NumericType                         = "N"
+	PseudoType                          = "P"
+	RangeType                           = "R"
+	StringType                          = "S"
+	TimespanType                        = "T"
+	UserDefineType                      = "U"
+	BitStringType                       = "V"
+	UnknownType                         = "X"
+)
+
+func (category PostgresTypeCategory) ToJsonType() SchemaType {
+	switch category {
+	case ArrayType:
+		return Array
+	case BooleanType:
+		return BooleanType
+	case UserDefineType:
+	case CompositeType:
+		return Object
+	case DateType:
+	case EnumType:
+	case GeometricType:
+	case NetworkType:
+	case PseudoType:
+	case RangeType:
+	case BitStringType:
+	case TimespanType:
+	case StringType:
+		return String
+	case NumericType:
+		return Number
+	case UnknownType:
+		return Null
+	}
+	return Null
+}
+
+type QueryHandler func(rows pgx.Rows) Schemas
+
+func QueryDB(query *string, handler QueryHandler) Schemas {
 	dbUrl := viper.GetString("db.config.url")
 	conn, err := pgx.Connect(context.Background(), dbUrl)
 	cobra.CheckErr(err)
@@ -30,5 +77,5 @@ func QueryDB(query *string, handler QueryHandler) {
 	// safe to close rows multiple times.
 	defer rows.Close()
 
-	handler(rows)
+	return handler(rows)
 }
