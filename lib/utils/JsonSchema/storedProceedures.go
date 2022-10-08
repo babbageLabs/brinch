@@ -11,7 +11,7 @@ type StoredProcedures struct {
 }
 
 func (e StoredProcedures) GetQuery() string {
-	return constants.ListAllCustomTypes
+	return constants.ListAllSps
 }
 
 func (e StoredProcedures) QueryHandler(rows pgx.Rows) utils.Schemas {

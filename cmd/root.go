@@ -1,7 +1,4 @@
-/*
-Copyright © 2022 Francis Gitau
-
-*/
+// Package cmd /*
 package cmd
 
 import (
