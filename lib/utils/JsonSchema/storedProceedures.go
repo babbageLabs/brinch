@@ -28,7 +28,7 @@ func (e StoredProcedures) QueryHandler(rows pgx.Rows) utils.Schemas {
 		cobra.CheckErr(err)
 
 		sp, ok := sps[p.RoutineName]
-		if ok == true {
+		if ok {
 			sp.Parameters = append(sp.Parameters, p)
 			sps[p.RoutineName] = sp
 		} else {

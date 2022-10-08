@@ -24,7 +24,7 @@ func (sp *StoredProcedure) getRequiredProperties() []string {
 	var required []string
 	if len(sp.Parameters) > 0 {
 		for _, value := range sp.Parameters {
-			if value.ParameterDefault.Valid == false {
+			if !value.ParameterDefault.Valid {
 				required = append(required, value.ParameterName)
 			}
 		}

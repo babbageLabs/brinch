@@ -28,7 +28,7 @@ func (e Enums) QueryHandler(rows pgx.Rows) utils.Schemas {
 
 		_, ok := ret[enumtype]
 
-		if ok != true {
+		if !ok {
 			var s []string
 			ret[enumtype] = append(s, enumlabel)
 		} else {

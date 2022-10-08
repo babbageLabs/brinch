@@ -18,12 +18,12 @@ type Schemas []JSONSchemaBase
 
 const (
 	String  SchemaType = "string"
-	Number             = "number"
-	Integer            = "integer"
-	Object             = "object"
-	Array              = "array"
-	Boolean            = "boolean"
-	Null               = "null"
+	Number  SchemaType = "number"
+	Integer SchemaType = "integer"
+	Object  SchemaType = "object"
+	Array   SchemaType = "array"
+	Boolean SchemaType = "boolean"
+	Null    SchemaType = "null"
 )
 
 func (s SchemaType) ToString() (string, error) {
@@ -102,12 +102,12 @@ func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
 	schema := viper.GetString("jsonSchema.schema")
 	path := viper.GetString("jsonSchema.targetPath")
 
-	if path == "" {
-		path, err := os.Getwd()
-		cobra.CheckErr(err)
-
-		path = filepath.Join(path, "schema", "json")
-	}
+	//if path == "" {
+	//	path, err := os.Getwd()
+	//	cobra.CheckErr(err)
+	//
+	//	path = filepath.Join(path, "schema", "json")
+	//}
 
 	jsonInput.Schema = schema
 	jsonInput.Name = jsonInput.Id + ".schema" + ".json"

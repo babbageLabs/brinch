@@ -28,7 +28,7 @@ func (e CompositeType) QueryHandler(rows pgx.Rows) utils.Schemas {
 
 		tt, ok := customTypes[attr.TypeName]
 
-		if ok == true {
+		if ok {
 			customTypes[attr.TypeName] = append(tt, attr)
 		} else {
 			customTypes[attr.TypeName] = append([]utils.CustomTypeAttr{}, attr)

@@ -12,20 +12,20 @@ type PostgresTypeCategory string
 
 const (
 	ArrayType      PostgresTypeCategory = "A"
-	BooleanType                         = "B"
-	CompositeType                       = "C"
-	DateType                            = "D"
-	EnumType                            = "E"
-	GeometricType                       = "G"
-	NetworkType                         = "I"
-	NumericType                         = "N"
-	PseudoType                          = "P"
-	RangeType                           = "R"
-	StringType                          = "S"
-	TimespanType                        = "T"
-	UserDefineType                      = "U"
-	BitStringType                       = "V"
-	UnknownType                         = "X"
+	BooleanType    PostgresTypeCategory = "B"
+	CompositeType  PostgresTypeCategory = "C"
+	DateType       PostgresTypeCategory = "D"
+	EnumType       PostgresTypeCategory = "E"
+	GeometricType  PostgresTypeCategory = "G"
+	NetworkType    PostgresTypeCategory = "I"
+	NumericType    PostgresTypeCategory = "N"
+	PseudoType     PostgresTypeCategory = "P"
+	RangeType      PostgresTypeCategory = "R"
+	StringType     PostgresTypeCategory = "S"
+	TimespanType   PostgresTypeCategory = "T"
+	UserDefineType PostgresTypeCategory = "U"
+	BitStringType  PostgresTypeCategory = "V"
+	UnknownType    PostgresTypeCategory = "X"
 )
 
 func (category PostgresTypeCategory) ToJsonType() SchemaType {
@@ -33,7 +33,7 @@ func (category PostgresTypeCategory) ToJsonType() SchemaType {
 	case ArrayType:
 		return Array
 	case BooleanType:
-		return BooleanType
+		return Boolean
 	case UserDefineType:
 	case CompositeType:
 		return Object
