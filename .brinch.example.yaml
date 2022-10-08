@@ -1,0 +1,16 @@
+app:
+  name: brinch_blog
+db:
+  config:
+    url: 'postgres://<username>:<password>@<server>:<port>/<database>'
+    fileNameSeparator: .
+  schemas:
+    - <Path to db initialization scripts>
+cache:
+  redis:
+    uri: redis://<server>:<port>/0
+jsonSchema:
+  schema: 'https://json-schema.org/draft/2020-12/schema'
+  targetPath: <Path to location where json schema files will be stored>
+  server:
+    port: 8009 # we have bundled a simple file server to serve the json schema that have been generated.
