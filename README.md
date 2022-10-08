@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/babbageLabs/brinch/badge.svg?branch=master)](https://coveralls.io/github/babbageLabs/brinch?branch=master)
+
 # About
 
 Brinch is a cli tool used to generate [Json Schema](https://json-schema.org/specification.html) assets derived from postgres objects. The 
