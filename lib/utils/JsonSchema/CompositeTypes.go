@@ -8,14 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type CompositeType struct {
+type CompositeTypes struct {
 }
 
-func (e CompositeType) GetQuery() string {
+func (e CompositeTypes) GetQuery() string {
 	return constants.ListAllCustomTypes
 }
 
-func (e CompositeType) QueryHandler(rows pgx.Rows) utils.Schemas {
+func (e CompositeTypes) QueryHandler(rows pgx.Rows) utils.Schemas {
 	count := 0
 	customTypes := make(map[string]utils.CustomTypeAttrs)
 
@@ -36,13 +36,12 @@ func (e CompositeType) QueryHandler(rows pgx.Rows) utils.Schemas {
 	}
 	fmt.Printf("No of User Defined types found: %d \n", len(customTypes))
 
-	return dbCustomTypeToJsonSchema(&customTypes)
+	return DbCustomTypeToJsonSchema(&customTypes)
 }
 
-func dbCustomTypeToJsonSchema(values *map[string]utils.CustomTypeAttrs) utils.Schemas {
+func DbCustomTypeToJsonSchema(values *map[string]utils.CustomTypeAttrs) utils.Schemas {
 	var customTypes utils.Schemas
 	for typId, v := range *values {
-		fmt.Printf("%s\n", typId)
 		customTypes = append(customTypes, utils.JSONSchemaBase{
 			Id:          typId,
 			Description: "A composite type",

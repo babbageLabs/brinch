@@ -17,7 +17,7 @@ var compositeTypesCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("compositeTypes called")
-		JsonSchema.Export(JsonSchema.CompositeType{})
+		JsonSchema.Export(JsonSchema.CompositeTypes{})
 	},
 }
 
