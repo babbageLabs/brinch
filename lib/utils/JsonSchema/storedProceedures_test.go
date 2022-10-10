@@ -22,10 +22,11 @@ func TestStoredProcedureQueryHandler(t *testing.T) {
 	rows := pgxpoolmock.
 		NewRows(columns).
 		AddRow("acl", "permissions_add_17880", "permissions_add", "permissions", "IN", "ARRAY", "_permission_tt", nil).
+		AddRow("acl", "permissions_add_17380", "permissions_addD", "permissions", "IN", "ARRAY", "_permission_tt", nil).
 		ToPgxRows()
 
 	sp := StoredProcedures{}
 	schema := sp.QueryHandler(rows)
 
-	assert.Equal(t, len(schema), 1)
+	assert.Equal(t, len(schema), 2)
 }
