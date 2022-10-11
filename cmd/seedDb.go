@@ -25,6 +25,8 @@ to quickly create a Cobra application.`,
 		schemas := viper.GetStringSlice("db.schemas")
 		engine := viper.GetString("db.config.engine")
 		url := viper.GetString("db.config.url")
+		fileMatchPattern := viper.GetString("db.fileMatchPattern")
+
 		// Get a database handler
 		db, err := sql.Open(engine, url)
 		cobra.CheckErr(err)
@@ -32,7 +34,8 @@ to quickly create a Cobra application.`,
 		fmt.Printf("%s \n", schemas)
 		for _, element := range schemas {
 			fmt.Printf("Scanning files in path %s \n", element)
-			seed.ScanDir(element, db)
+			_, err := seed.ScanDir(&element, &fileMatchPattern, db)
+			cobra.CheckErr(err)
 		}
 	},
 }

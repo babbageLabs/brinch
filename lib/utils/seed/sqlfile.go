@@ -7,6 +7,7 @@ package seed
 import (
 	"database/sql"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 )
@@ -121,5 +122,6 @@ func saveTx(tx *sql.Tx, err *error) {
 	} else {
 		e := tx.Commit()
 		err = &e
+		logrus.Debug(err)
 	}
 }

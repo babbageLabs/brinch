@@ -3,8 +3,6 @@ package seed
 import (
 	"database/sql"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"io/fs"
 	"path/filepath"
 	"regexp"
@@ -12,30 +10,31 @@ import (
 	"strings"
 )
 
-func ScanDir(path string, db *sql.DB) {
-	fileMatchPattern := viper.GetString("db.fileMatchPattern")
-	//fileKey := fmt.Sprintf("brinch.%s.files", appName)
-
-	err := filepath.WalkDir(path, func(path string, info fs.DirEntry, err error) error {
-		cobra.CheckErr(err)
+func ScanDir(path *string, fileMatchPattern *string, db *sql.DB) (string, error) {
+	err := filepath.WalkDir(*path, func(path string, info fs.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
 
 		if !info.IsDir() {
-			match, _ := regexp.MatchString(fileMatchPattern, info.Name())
+			match, _ := regexp.MatchString(*fileMatchPattern, info.Name())
 			if match {
 				priority, err := strconv.ParseFloat(strings.Split(info.Name(), ".")[0], 64)
-				cobra.CheckErr(err)
+				if err != nil {
+					priority = -1
+				}
 
 				fmt.Printf("%s , %f \n", path, priority)
 				_, err = FileSeed(path, db)
 				if err != nil {
 					fmt.Printf("%s : %s \n", "error seeding file", path)
-					cobra.CheckErr(err)
+					return nil
 				}
 			}
 		}
 		return nil
 	})
-	cobra.CheckErr(err)
+	return "", err
 }
 
 func FileSeed(path string, db *sql.DB) (res []sql.Result, err error) {

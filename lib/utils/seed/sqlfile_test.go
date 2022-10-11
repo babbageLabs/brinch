@@ -10,10 +10,6 @@ import (
 	"testing"
 )
 
-var (
-	db *sql.DB
-)
-
 func newMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -74,7 +70,10 @@ func TestExec_Rollback(t *testing.T) {
 
 	s := SqlFile{queries: qs}
 
-	s.Exec(db)
+	_, err := s.Exec(db)
+	if err != nil {
+		return
+	}
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
