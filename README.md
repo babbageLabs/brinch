@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/babbageLabs/brinch/badge.svg?branch=master)](https://coveralls.io/github/babbageLabs/brinch?branch=master&kill_cache=1)
+[![Coverage Status](https://coveralls.io/repos/github/babbageLabs/brinch/badge.png?branch=master)](https://coveralls.io/github/babbageLabs/brinch?branch=master&kill_cache=1)
 
 # About
 
