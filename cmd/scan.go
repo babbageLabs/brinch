@@ -2,17 +2,9 @@
 package cmd
 
 import (
-	"brinch/lib/utils"
-	"fmt"
-	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/fs"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 // scanCmd represents the scan command
@@ -26,7 +18,7 @@ database initialization configuration`,
 
 		for _, element := range schemas {
 			logrus.Info("Scanning path ", element)
-			scanDir(element)
+			//seed.ScanDir(element)
 			logrus.Info("Scanning completed")
 		}
 	},
@@ -46,41 +38,30 @@ func init() {
 	// scanCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func scanDir(path string) {
-	conn, ctx := utils.CreateConnection()
-	appName := viper.GetString("app.name")
-	fileKey := fmt.Sprintf("brinch.%s.files", appName)
-
-	err := filepath.WalkDir(path, func(path string, info fs.DirEntry, err error) error {
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-
-		if !info.IsDir() {
-			match, _ := regexp.MatchString("\\d+\\.\\w+\\.\\w+\\.\\w+\\.(sql|yaml|yml)", info.Name())
-			if match {
-				priority, err := strconv.ParseFloat(strings.Split(info.Name(), ".")[0], 64)
-				if err != nil {
-					logrus.Error(err)
-					panic(err)
-				}
-
-				err = conn.ZAdd(ctx, fileKey, &redis.Z{
-					Score:  priority,
-					Member: path,
-				}).Err()
-				if err != nil {
-					logrus.Error(err)
-					panic(err)
-				}
-
-				fmt.Printf("%s\n", path)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-}
+//func scanDir(path string) {
+//	conn, ctx := utils.CreateConnection()
+//	appName := viper.GetString("app.name")
+//	fileKey := fmt.Sprintf("brinch.%s.files", appName)
+//
+//	err := filepath.WalkDir(path, func(path string, info fs.DirEntry, err error) error {
+//		cobra.CheckErr(err)
+//
+//		if !info.IsDir() {
+//			match, _ := regexp.MatchString("\\d+\\.\\w+\\.\\w+\\.\\w+\\.(sql|yaml|yml)", info.Name())
+//			if match {
+//				priority, err := strconv.ParseFloat(strings.Split(info.Name(), ".")[0], 64)
+//				cobra.CheckErr(err)
+//
+//				err = conn.ZAdd(ctx, fileKey, &redis.Z{
+//					Score:  priority,
+//					Member: path,
+//				}).Err()
+//				cobra.CheckErr(err)
+//
+//				fmt.Printf("%s\n", path)
+//			}
+//		}
+//		return nil
+//	})
+//	cobra.CheckErr(err)
+//}
