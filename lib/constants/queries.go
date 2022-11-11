@@ -13,6 +13,7 @@ FROM information_schema.routines proc
          LEFT JOIN information_schema.parameters args
                    ON proc.specific_schema = args.specific_schema
                        AND proc.specific_name = args.specific_name
+		
 WHERE proc.routine_schema NOT IN ('pg_catalog', 'information_schema')
   AND proc.routine_type = 'PROCEDURE'
 ORDER BY proc.routine_schema,

@@ -55,9 +55,9 @@ func (category PostgresTypeCategory) ToJsonType() SchemaType {
 	return Null
 }
 
-type QueryHandler func(rows pgx.Rows) Schemas
+type QueryHandler func(rows pgx.Rows) (bool, error)
 
-func QueryDB(query *string, handler QueryHandler) Schemas {
+func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	dbUrl := viper.GetString("db.config.url")
 	conn, err := pgx.Connect(context.Background(), dbUrl)
 	cobra.CheckErr(err)

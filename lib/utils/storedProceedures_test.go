@@ -1,13 +1,14 @@
-package JsonSchema
+package utils
 
 import (
 	"brinch/lib/constants"
 	"github.com/driftprogramming/pgxpoolmock"
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetStoredProcedureQuery(t *testing.T) {
+	t.Parallel()
 	sp := StoredProcedures{}
 	query := sp.GetQuery()
 
@@ -25,8 +26,14 @@ func TestStoredProcedureQueryHandler(t *testing.T) {
 		AddRow("acl", "permissions_add_17380", "permissions_addD", "permissions", "IN", "ARRAY", "_permission_tt", nil).
 		ToPgxRows()
 
-	sp := StoredProcedures{}
-	schema := sp.QueryHandler(rows)
+	procedures := StoredProcedures{}
+	ok, err := procedures.QueryHandler(rows)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, ok, true)
 
-	assert.Equal(t, len(schema), 2)
+	assert.Equal(t, len(procedures.sps), 2)
+
+	schemas, err := procedures.ToJsonSchema()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, len(schemas), 2)
 }

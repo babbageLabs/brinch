@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"brinch/lib/utils"
 	"brinch/lib/utils/JsonSchema"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +13,8 @@ var enumCmd = &cobra.Command{
 	Short: "Export all enums defined in the db to jsonschema",
 	Long:  `discover all enum types in the target database and generate json schema representations`,
 	Run: func(cmd *cobra.Command, args []string) {
-		JsonSchema.Export(JsonSchema.Enums{})
+		var enums utils.Enums
+		JsonSchema.Export(&enums)
 	},
 }
 

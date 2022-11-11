@@ -1,4 +1,4 @@
-package JsonSchema
+package utils
 
 import (
 	"brinch/lib/constants"
@@ -27,9 +27,9 @@ func TestGetEnumsSchema(t *testing.T) {
 		ToPgxRows()
 	enum := Enums{}
 
-	schema := enum.QueryHandler(rows)
-
-	assert.Equal(t, len(schema), 2)
-	//assert.Equal(t, schema[0].Id, "status")
-	//assert.Equal(t, schema[1].Id, "channels")
+	ok, _ := enum.QueryHandler(rows)
+	assert.Equal(t, ok, true)
+	assert.Equal(t, len(enum.enums), 2)
+	assert.Equal(t, enum.enums["status"][0], "draft")
+	assert.Equal(t, enum.enums["channels"][0], "web")
 }

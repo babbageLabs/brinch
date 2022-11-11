@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"brinch/lib/utils"
 	"brinch/lib/utils/JsonSchema"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +13,8 @@ var storedProceduresCmd = &cobra.Command{
 	Short: "Export all stored procedures defined in the db to jsonschema",
 	Long:  `A command to discover all composite types, domains and stored procedures`,
 	Run: func(cmd *cobra.Command, args []string) {
-		JsonSchema.Export(JsonSchema.StoredProcedures{})
+		var procedures utils.StoredProcedures
+		JsonSchema.Export(&procedures)
 	},
 }
 

@@ -102,41 +102,12 @@ func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
 	schema := viper.GetString("jsonSchema.schema")
 	path := viper.GetString("jsonSchema.targetPath")
 
-	//if path == "" {
-	//	path, err := os.Getwd()
-	//	cobra.CheckErr(err)
-	//
-	//	path = filepath.Join(path, "schema", "json")
-	//}
-
 	jsonInput.Schema = schema
 	jsonInput.Name = jsonInput.Id + ".schema" + ".json"
 	jsonInput.Title = cases.Title(language.English, cases.Compact).String(jsonInput.Id)
 	jsonInput.Id = filepath.Join(path, jsonInput.Name)
 
 }
-
-//func (jsonInput *JSONSchemaBase) ResolvePropertyTypes(customTypes map[string]CustomTypes) {
-//	dirPath := viper.GetString("jsonSchema.targetPath")
-//	port := viper.GetString("jsonSchema.server.port")
-//	if dirPath == "" {
-//		path, err := os.Getwd()
-//		cobra.CheckErr(err)
-//
-//		dirPath = filepath.Join(path, "api", "json")
-//	}
-//
-//	for key, props := range jsonInput.Properties {
-//		if props.Type != "" && props.Ref == "" {
-//			typ, ok := customTypes[props.Type]
-//			if ok {
-//				jsonInput.Properties[key] = JSONSchemaProperty{
-//					Ref: "http://localhost:" + port + "/" + typ.Name + ".schema.json",
-//				}
-//			}
-//		}
-//	}
-//}
 
 func (schemas Schemas) Export() {
 	for _, schema := range schemas {

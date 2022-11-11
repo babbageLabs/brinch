@@ -2,9 +2,8 @@
 package cmd
 
 import (
+	"brinch/lib/utils"
 	"brinch/lib/utils/JsonSchema"
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +15,8 @@ var compositeTypesCmd = &cobra.Command{
 	and generate the representative json schema representation
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("compositeTypes called")
-		JsonSchema.Export(JsonSchema.CompositeTypes{})
+		var composites utils.CompositeTypes
+		JsonSchema.Export(&composites)
 	},
 }
 
