@@ -22,12 +22,13 @@ func TestStoredProcedureQueryHandler(t *testing.T) {
 	columns := []string{"specific_schema", "specific_name", "routine_name", "parameter_name", "parameter_mode", "data_type", "udt_name", "parameter_default"}
 	rows := pgxpoolmock.
 		NewRows(columns).
-		AddRow("acl", "permissions_add_17880", "permissions_add", "permissions", "IN", "ARRAY", "_permission_tt", nil).
-		AddRow("acl", "permissions_add_17380", "permissions_addD", "permissions", "IN", "ARRAY", "_permission_tt", nil).
+		AddRow("acl", "permissions_add_17880", "permissions_add", "permissions", ParamIn, "ARRAY", "_permission_tt", nil).
+		AddRow("acl", "permissions_add_17380", "permissions_addD", "permissions", ParamIn, "ARRAY", "_permission_tt", nil).
 		ToPgxRows()
 
 	procedures := StoredProcedures{}
-	ok, err := procedures.QueryHandler(rows)
+	dbMeta := DbMeta{}
+	ok, err := procedures.QueryHandler(rows, &dbMeta)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, ok, true)
 

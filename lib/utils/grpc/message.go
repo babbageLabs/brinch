@@ -2,16 +2,16 @@ package grpc
 
 import "fmt"
 
-type message struct {
-	name       string
-	attributes []attribute
+type Message struct {
+	Name       string
+	Attributes []Attribute
 }
 
-// ToProto generate a protobuf representation on the message
-func (mes *message) ToProto() (string, error) {
-	message := fmt.Sprintf("message %s { \n", mes.name)
+// ToProto generate a protobuf representation on the Message
+func (mes *Message) ToProto() (string, error) {
+	message := fmt.Sprintf("Message %s { \n", mes.Name)
 
-	for _, a := range mes.attributes {
+	for _, a := range mes.Attributes {
 		attr, err := a.ToProto()
 		if err != nil {
 			return "", err
@@ -22,7 +22,7 @@ func (mes *message) ToProto() (string, error) {
 	return fmt.Sprintf("%s \n  }", message), nil
 }
 
-// ToCode generate code representation for the message
-func (mes *message) ToCode() (string, error) {
+// ToCode generate code representation for the Message
+func (mes *Message) ToCode() (string, error) {
 	return "", nil
 }

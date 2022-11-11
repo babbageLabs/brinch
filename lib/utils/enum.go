@@ -13,7 +13,7 @@ func (enums *Enums) GetQuery() string {
 	return constants.ListEnums
 }
 
-func (enums *Enums) QueryHandler(rows pgx.Rows) (bool, error) {
+func (enums *Enums) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
 	enums.enums = make(map[string][]string)
 
 	for rows.Next() {

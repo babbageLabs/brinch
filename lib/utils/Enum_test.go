@@ -26,8 +26,8 @@ func TestGetEnumsSchema(t *testing.T) {
 		AddRow("channels", "mobile").
 		ToPgxRows()
 	enum := Enums{}
-
-	ok, _ := enum.QueryHandler(rows)
+	dbMeta := DbMeta{}
+	ok, _ := enum.QueryHandler(rows, &dbMeta)
 	assert.Equal(t, ok, true)
 	assert.Equal(t, len(enum.enums), 2)
 	assert.Equal(t, enum.enums["status"][0], "draft")

@@ -10,7 +10,7 @@ type CompositeTypes struct {
 	types map[string]CustomTypeAttrs
 }
 
-func (composites *CompositeTypes) QueryHandler(rows pgx.Rows) (bool, error) {
+func (composites *CompositeTypes) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
 	count := 0
 	composites.types = make(map[string]CustomTypeAttrs)
 

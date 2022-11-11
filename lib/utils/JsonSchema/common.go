@@ -8,7 +8,7 @@ import (
 
 type ToJsonSchema interface {
 	GetQuery() string
-	QueryHandler(rows pgx.Rows) (bool, error)
+	QueryHandler(rows pgx.Rows, meta *utils.DbMeta) (bool, error)
 	ToJsonSchema() (utils.Schemas, error)
 }
 

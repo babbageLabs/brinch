@@ -10,6 +10,10 @@ import (
 
 type PostgresTypeCategory string
 
+type DbMeta struct {
+	engine SourceType
+}
+
 const (
 	ArrayType      PostgresTypeCategory = "A"
 	BooleanType    PostgresTypeCategory = "B"
@@ -55,7 +59,7 @@ func (category PostgresTypeCategory) ToJsonType() SchemaType {
 	return Null
 }
 
-type QueryHandler func(rows pgx.Rows) (bool, error)
+type QueryHandler func(rows pgx.Rows, meta *DbMeta) (bool, error)
 
 func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	dbUrl := viper.GetString("db.config.url")
@@ -77,5 +81,7 @@ func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	// safe to close rows multiple times.
 	defer rows.Close()
 
-	return handler(rows)
+	return handler(rows, &DbMeta{
+		engine: Postgres,
+	})
 }

@@ -1,19 +1,35 @@
 package grpc
 
-import "fmt"
+import (
+	"brinch/lib/utils"
+	"fmt"
+)
 
-type attribute struct {
+type Attribute struct {
 	Type  string
-	name  string
-	index int
+	Name  string
+	Index int
 }
 
-// ToProto generate a protobuf representation on the attribute
-func (attr *attribute) ToProto() (string, error) {
-	return fmt.Sprintf("%s %s = %d;", attr.name, attr.Type, attr.index), nil
+// ToProto generate a protobuf representation on the Attribute
+func (attr *Attribute) ToProto() (string, error) {
+	return fmt.Sprintf("%s %s = %d;", attr.Name, attr.Type, attr.Index), nil
 }
 
-// ToCode generate code representation for the attribute
-func (attr *attribute) ToCode() (string, error) {
+// ToCode generate code representation for the Attribute
+func (attr *Attribute) ToCode() (string, error) {
 	return "", nil
+}
+
+func (attr *Attribute) FromStoredProcedureParameter(param *utils.StoredProcedureParameter, index int) (bool, error) {
+	mapping, err := utils.ResolveTypeMappings(param.UdtName, param.Source, utils.Grpc)
+	if err != nil {
+		return false, err
+	}
+
+	attr.Type = mapping
+	attr.Name = param.ParameterName
+	attr.Index = index
+
+	return true, nil
 }

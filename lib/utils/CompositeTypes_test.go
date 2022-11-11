@@ -20,6 +20,7 @@ func TestGetCustomTypes(t *testing.T) {
 	t.Parallel()
 
 	userCreate := CompositeTypes{}
+	dbMeta := DbMeta{}
 	typeName := "user_create"
 
 	rows := pgxpoolmock.NewRows([]string{"attr_name", "type_name", "type_category", "attr_type_name", "attr_type_category"}).
@@ -29,7 +30,7 @@ func TestGetCustomTypes(t *testing.T) {
 		AddRow("isMinor", typeName, CompositeType, "varchar", BooleanType).
 		AddRow("age", typeName, CompositeType, "varchar", NumericType).
 		ToPgxRows()
-	_, err := userCreate.QueryHandler(rows)
+	_, err := userCreate.QueryHandler(rows, &dbMeta)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, len(userCreate.types), 1)
 

@@ -1,4 +1,4 @@
-package JsonSchema
+package utils
 
 import (
 	"github.com/jarcoal/httpmock"
@@ -32,8 +32,8 @@ func TestGetMapAndToMapTestValidUrl(t *testing.T) {
 		t.Errorf("Expected GetMappings to complete with no errors: %v", err)
 	}
 
-	if len(mapping) != 2 {
-		t.Errorf("Expected type mapping length 2, got %d", len(mapping))
+	if len(mapping.mappings) != 2 {
+		t.Errorf("Expected type mapping length 2, got %d", len(mapping.mappings))
 	}
 
 	mappingMap := mapping.ToMap()
