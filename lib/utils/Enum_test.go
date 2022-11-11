@@ -32,4 +32,8 @@ func TestGetEnumsSchema(t *testing.T) {
 	assert.Equal(t, len(enum.enums), 2)
 	assert.Equal(t, enum.enums["status"][0], "draft")
 	assert.Equal(t, enum.enums["channels"][0], "web")
+
+	schemas, err := enum.ToJsonSchema()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, len(schemas), 2)
 }

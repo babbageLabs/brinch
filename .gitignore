@@ -1,3 +1,4 @@
 .brinch.yaml
 api/json/*
 .idea
+coverage.out

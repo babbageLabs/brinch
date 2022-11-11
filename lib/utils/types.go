@@ -51,6 +51,16 @@ func (sp *StoredProcedure) getProperties() JSONSchemaProperties {
 	return properties
 }
 
+// GetParameters return the input parameters for the SP
+func (sp *StoredProcedure) GetParameters() {
+
+}
+
+// GetResponse return the expected response structure from this SP
+func (sp *StoredProcedure) GetResponse() {
+
+}
+
 // StoredProcedureParameter An Attribute belonging to a stored procedure as defined in the database
 type StoredProcedureParameter struct {
 	RoutineName      string
