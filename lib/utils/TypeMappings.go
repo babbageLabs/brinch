@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -93,6 +92,6 @@ func ResolveTypeMappings(dbType string, source SourceType, destination Destinati
 		return value, nil
 	}
 
-	return "", errors.New(fmt.Sprintf("Error resolving the type %s from %s to a  type in %s \n", dbType, source, destination))
+	return "", fmt.Errorf("Error resolving the type %s from %s to a  type in %s \n", dbType, source, destination)
 
 }
