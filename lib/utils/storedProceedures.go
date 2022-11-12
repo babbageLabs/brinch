@@ -13,6 +13,16 @@ func (procedures *StoredProcedures) GetQuery() string {
 	return constants.ListAllSps
 }
 
+func (procedures *StoredProcedures) GetSps() []StoredProcedure {
+	var sps []StoredProcedure
+
+	for _, procedure := range procedures.sps {
+		sps = append(sps, procedure)
+	}
+
+	return sps
+}
+
 func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
 	procedures.sps = make(map[string]StoredProcedure)
 	count := 0
@@ -25,17 +35,17 @@ func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *DbMeta) (b
 		if err != nil {
 			return false, err
 		}
-		p.Source = meta.engine
+		p.Source = meta.SourceType
 		sp, ok := procedures.sps[p.RoutineName]
 		if ok {
 			sp.Parameters = append(sp.Parameters, p)
-			sp.Source = meta.engine
+			sp.Source = meta.SourceType
 			procedures.sps[p.RoutineName] = sp
 		} else {
 			sp = StoredProcedure{
 				Name:       p.RoutineName,
 				Parameters: append([]StoredProcedureParameter{}, p),
-				Source:     meta.engine,
+				Source:     meta.SourceType,
 			}
 			procedures.sps[p.RoutineName] = sp
 		}

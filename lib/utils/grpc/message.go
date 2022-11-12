@@ -9,7 +9,7 @@ type Message struct {
 
 // ToProto generate a protobuf representation on the Message
 func (mes *Message) ToProto() (string, error) {
-	message := fmt.Sprintf("Message %s { \n", mes.Name)
+	message := fmt.Sprintf("message %s { \n", mes.Name)
 
 	for _, a := range mes.Attributes {
 		attr, err := a.ToProto()
@@ -19,7 +19,7 @@ func (mes *Message) ToProto() (string, error) {
 		message = fmt.Sprintf("%s \n  %s", message, attr)
 	}
 
-	return fmt.Sprintf("%s \n  }", message), nil
+	return fmt.Sprintf("%s\n}", message), nil
 }
 
 // ToCode generate code representation for the Message

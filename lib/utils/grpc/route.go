@@ -3,6 +3,7 @@ package grpc
 import (
 	"brinch/lib/utils"
 	"fmt"
+	"github.com/sirupsen/logrus"
 )
 
 type Route struct {
@@ -78,6 +79,19 @@ func (route *Route) GetReturnType() (string, error) {
 
 func (route *Route) getMessages() []Message {
 	var mes []Message
+
+	_, err := route.GetParamType()
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+
+	_, err = route.GetReturnType()
+	if err != nil {
+		logrus.Error(err)
+		return nil
+	}
+
 	mes = append(mes, route.Parameters)
 	mes = append(mes, route.Response)
 

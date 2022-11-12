@@ -5,11 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
+
+var GetMappingsUrl = viper.GetString("app.typeMappings")
 
 type SchemaTypeMapping struct {
 	Key   string `json:"key" validate:"required"`
@@ -30,8 +33,8 @@ const (
 )
 
 const (
-	Grpc       DestinationType = "grpc"
-	JsonSchema DestinationType = "jsonSchema"
+	Grpc DestinationType = "grpc"
+	//JsonSchema DestinationType = "jsonSchema"
 )
 
 func (mapping *SchemaTypeMappingMap) ToMap() map[string]string {
@@ -74,7 +77,7 @@ func (mapping *SchemaTypeMappingMap) GetMappings(typeMappings string) (bool, err
 
 // GetSourceURl
 func (mapping *SchemaTypeMappingMap) GetSourceURl() string {
-	return ""
+	return fmt.Sprintf("%s/%s/%s", GetMappingsUrl, mapping.source, mapping.destination)
 }
 
 func ResolveTypeMappings(dbType string, source SourceType, destination DestinationType) (string, error) {

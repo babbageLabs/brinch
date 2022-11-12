@@ -14,7 +14,7 @@ func (grpc *BaseGRPC) GetDefaultProtoAttributes() (string, error) {
 	proto := ""
 	// add the syntax attr
 	if grpc.Syntax != "" {
-		proto = fmt.Sprintf("syntax = \"%s\";", proto)
+		proto = fmt.Sprintf("syntax = \"%s\";", grpc.Syntax)
 	}
 
 	// add service options

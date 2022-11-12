@@ -11,7 +11,7 @@ import (
 type PostgresTypeCategory string
 
 type DbMeta struct {
-	engine SourceType
+	SourceType SourceType
 }
 
 const (
@@ -82,6 +82,6 @@ func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	defer rows.Close()
 
 	return handler(rows, &DbMeta{
-		engine: Postgres,
+		SourceType: Postgres,
 	})
 }
