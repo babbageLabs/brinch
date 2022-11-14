@@ -57,7 +57,7 @@ func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *databases.
 }
 
 func (procedures *StoredProcedures) ToJsonSchema() (JsonSchema2.Schemas, error) {
-	var schemas []JsonSchema2.JSONSchemaBase
+	var schemas []JsonSchema2.Base
 
 	for _, value := range procedures.sps {
 		schemas = append(schemas, value.ToJsonSchema())

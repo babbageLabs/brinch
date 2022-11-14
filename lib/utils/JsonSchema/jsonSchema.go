@@ -14,7 +14,7 @@ import (
 )
 
 type SchemaType string
-type Schemas []JSONSchemaBase
+type Schemas []Base
 
 const (
 	String  SchemaType = "string"
@@ -46,26 +46,26 @@ func (s SchemaType) ToString() (string, error) {
 	return "", errors.New("unknown JSON schema type")
 }
 
-type JSONSchemaProperty struct {
+type Property struct {
 	Type string `json:"type,omitempty"`
 	Ref  string `json:"$ref,omitempty"`
 }
 
-type JSONSchemaProperties map[string]JSONSchemaProperty
+type Properties map[string]Property
 
-type JSONSchemaBase struct {
-	Schema      string               `json:"$schema" validate:"required"`
-	Id          string               `json:"$id" validate:"required"`
-	Title       string               `json:"title" validate:"required"`
-	Name        string               `json:"-"`
-	Description string               `json:"description"`
-	SchemaType  SchemaType           `json:"type" validate:"required"`
-	Required    []string             `json:"required,omitempty"`
-	Enum        []string             `json:"enum,omitempty"`
-	Properties  JSONSchemaProperties `json:"properties,omitempty"`
+type Base struct {
+	Schema      string     `json:"$schema" validate:"required"`
+	Id          string     `json:"$id" validate:"required"`
+	Title       string     `json:"title" validate:"required"`
+	Name        string     `json:"-"`
+	Description string     `json:"description"`
+	SchemaType  SchemaType `json:"type" validate:"required"`
+	Required    []string   `json:"required,omitempty"`
+	Enum        []string   `json:"enum,omitempty"`
+	Properties  Properties `json:"properties,omitempty"`
 }
 
-func (jsonInput *JSONSchemaBase) GetDirPath(dirPath string) (string, error) {
+func (jsonInput *Base) GetDirPath(dirPath string) (string, error) {
 	if dirPath == "" {
 		path, err := os.Getwd()
 		if err != nil {
@@ -77,7 +77,7 @@ func (jsonInput *JSONSchemaBase) GetDirPath(dirPath string) (string, error) {
 	return dirPath, nil
 }
 
-func (jsonInput *JSONSchemaBase) GetJsonServerHost(jsonServerHost string) string {
+func (jsonInput *Base) GetJsonServerHost(jsonServerHost string) string {
 	if jsonServerHost != "" {
 		jsonInput.Id = jsonServerHost + "/" + jsonInput.Name
 	}
@@ -85,14 +85,14 @@ func (jsonInput *JSONSchemaBase) GetJsonServerHost(jsonServerHost string) string
 	return jsonInput.Id
 }
 
-func (jsonInput *JSONSchemaBase) ToBytes(jsonServerHost string) ([]byte, error) {
+func (jsonInput *Base) ToBytes(jsonServerHost string) ([]byte, error) {
 	jsonInput.AppendDefaultProperties()
 	jsonInput.Id = jsonInput.GetJsonServerHost(jsonServerHost)
 
 	return json.Marshal(jsonInput)
 }
 
-func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
+func (jsonInput *Base) AppendDefaultProperties() {
 	schema := viper.GetString("jsonSchema.schema")
 	jsonInput.Schema = schema
 	jsonInput.Name = jsonInput.Id + ".schema" + ".json"
@@ -101,8 +101,11 @@ func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
 
 func (schemas *Schemas) Export(dirPath string, jsonServerHost string) {
 	for _, schema := range *schemas {
-		dirPath, err := schema.GetDirPath(dirPath)
-		filePath := filepath.Join(dirPath, schema.Name)
+		dir, err := schema.GetDirPath(dirPath)
+		if err != nil {
+			logrus.Error(fmt.Sprintf("error preparing %s for writting to disk. the file will be skipped \n %s", schema.Id, err))
+		}
+		filePath := filepath.Join(dir, schema.Name)
 		bytes, err := schema.ToBytes(jsonServerHost)
 		if err != nil {
 			logrus.Error(fmt.Sprintf("error preparing %s for writting to disk. the file will be skipped \n %s", schema.Id, err))

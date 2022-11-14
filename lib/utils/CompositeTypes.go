@@ -43,7 +43,7 @@ func (composites *CompositeTypes) GetQuery() string {
 func (composites *CompositeTypes) ToJsonSchema() (JsonSchema2.Schemas, error) {
 	var customTypes JsonSchema2.Schemas
 	for typId, v := range composites.types {
-		customTypes = append(customTypes, JsonSchema2.JSONSchemaBase{
+		customTypes = append(customTypes, JsonSchema2.Base{
 			Id:          typId,
 			Description: "A composite type",
 			SchemaType:  JsonSchema2.Object,

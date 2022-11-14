@@ -42,9 +42,9 @@ func (enums *Enums) QueryHandler(rows pgx.Rows, meta *databases.DbMeta) (bool, e
 
 // ToJsonSchema accepts a map of schema names and the enum types and returns a collection of JsonSchema Objects
 func (enums *Enums) ToJsonSchema() (JsonSchema2.Schemas, error) {
-	var schemas []JsonSchema2.JSONSchemaBase
+	var schemas []JsonSchema2.Base
 	for k, v := range enums.enums {
-		schemas = append(schemas, JsonSchema2.JSONSchemaBase{
+		schemas = append(schemas, JsonSchema2.Base{
 			Id:          k,
 			Description: "",
 			SchemaType:  JsonSchema2.String,

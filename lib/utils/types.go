@@ -47,8 +47,8 @@ type CustomTypeAttr struct {
 // CustomTypeAttrs A slice of CustomTypeAttr with methods
 type CustomTypeAttrs []CustomTypeAttr
 
-func (sp *StoredProcedure) ToJsonSchema() JsonSchema2.JSONSchemaBase {
-	return JsonSchema2.JSONSchemaBase{
+func (sp *StoredProcedure) ToJsonSchema() JsonSchema2.Base {
+	return JsonSchema2.Base{
 		Id:          sp.Name,
 		Description: "An application route",
 		Required:    sp.getRequiredProperties(),
@@ -69,8 +69,8 @@ func (sp *StoredProcedure) getRequiredProperties() []string {
 	return required
 }
 
-func (sp *StoredProcedure) getProperties() JsonSchema2.JSONSchemaProperties {
-	var properties = JsonSchema2.JSONSchemaProperties{}
+func (sp *StoredProcedure) getProperties() JsonSchema2.Properties {
+	var properties = JsonSchema2.Properties{}
 
 	for _, param := range sp.Parameters {
 		dataType := param.DataType
@@ -80,7 +80,7 @@ func (sp *StoredProcedure) getProperties() JsonSchema2.JSONSchemaProperties {
 			dataType = param.UdtName
 		}
 
-		properties[param.ParameterName] = JsonSchema2.JSONSchemaProperty{
+		properties[param.ParameterName] = JsonSchema2.Property{
 			Type: dataType,
 		}
 	}
@@ -112,10 +112,10 @@ func (sp *StoredProcedure) GetResponse() []StoredProcedureParameter {
 	return res
 }
 
-func (attrs CustomTypeAttrs) ToJsonSchemaProperties() JsonSchema2.JSONSchemaProperties {
-	properties := make(JsonSchema2.JSONSchemaProperties)
+func (attrs CustomTypeAttrs) ToJsonSchemaProperties() JsonSchema2.Properties {
+	properties := make(JsonSchema2.Properties)
 	for _, attr := range attrs {
-		properties[attr.AttrName] = JsonSchema2.JSONSchemaProperty{
+		properties[attr.AttrName] = JsonSchema2.Property{
 			Type: string(attr.AttrTypeCategory),
 		}
 	}

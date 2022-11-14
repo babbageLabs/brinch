@@ -9,7 +9,7 @@ import (
 
 func TestJSONSchemaBase_AppendDefaultProperties(t *testing.T) {
 	t.Parallel()
-	schema := JSONSchemaBase{
+	schema := Base{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
 		Id:          "meta_tt",
 		Name:        "",
@@ -29,7 +29,7 @@ func TestJSONSchemaBase_AppendDefaultProperties(t *testing.T) {
 
 func TestJSONSchemaBase_GetDirPathDefault(t *testing.T) {
 	t.Parallel()
-	schema := JSONSchemaBase{
+	schema := Base{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
 		Id:          "meta_tt",
 		Name:        "",
@@ -42,6 +42,7 @@ func TestJSONSchemaBase_GetDirPathDefault(t *testing.T) {
 
 	schema.AppendDefaultProperties()
 	dirPath, err := schema.GetDirPath("")
+	assert.NoError(t, err)
 
 	path, err := os.Getwd()
 	if err != nil {
@@ -56,7 +57,7 @@ func TestJSONSchemaBase_GetDirPathDefault(t *testing.T) {
 func TestJSONSchemaBase_GetJsonServerHost(t *testing.T) {
 	t.Parallel()
 	host := "http://localhost"
-	schema := JSONSchemaBase{
+	schema := Base{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
 		Id:          "meta_tt",
 		Name:        "",
@@ -75,7 +76,7 @@ func TestJSONSchemaBase_GetJsonServerHost(t *testing.T) {
 func TestJSONSchemaBase_ToBytes(t *testing.T) {
 	t.Parallel()
 	host := "http://localhost"
-	schema := JSONSchemaBase{
+	schema := Base{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
 		Id:          "meta_tt",
 		Name:        "",
