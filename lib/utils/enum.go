@@ -2,18 +2,22 @@ package utils
 
 import (
 	"brinch/lib/constants"
+	JsonSchema2 "brinch/lib/utils/JsonSchema"
+	"brinch/lib/utils/databases"
 	"github.com/jackc/pgx/v4"
 )
 
 type Enums struct {
-	enums map[string][]string
+	enums  map[string][]string
+	Source databases.SourceType
 }
 
 func (enums *Enums) GetQuery() string {
 	return constants.ListEnums
 }
 
-func (enums *Enums) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
+func (enums *Enums) QueryHandler(rows pgx.Rows, meta *databases.DbMeta) (bool, error) {
+	enums.Source = meta.SourceType
 	enums.enums = make(map[string][]string)
 
 	for rows.Next() {
@@ -37,13 +41,13 @@ func (enums *Enums) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
 }
 
 // ToJsonSchema accepts a map of schema names and the enum types and returns a collection of JsonSchema Objects
-func (enums *Enums) ToJsonSchema() (Schemas, error) {
-	var schemas []JSONSchemaBase
+func (enums *Enums) ToJsonSchema() (JsonSchema2.Schemas, error) {
+	var schemas []JsonSchema2.JSONSchemaBase
 	for k, v := range enums.enums {
-		schemas = append(schemas, JSONSchemaBase{
+		schemas = append(schemas, JsonSchema2.JSONSchemaBase{
 			Id:          k,
 			Description: "",
-			SchemaType:  String,
+			SchemaType:  JsonSchema2.String,
 			Enum:        v,
 		})
 	}

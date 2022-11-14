@@ -2,6 +2,7 @@ package utils
 
 import (
 	"brinch/lib/constants"
+	"brinch/lib/utils/databases"
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/magiconair/properties/assert"
 	"testing"
@@ -26,7 +27,7 @@ func TestGetEnumsSchema(t *testing.T) {
 		AddRow("channels", "mobile").
 		ToPgxRows()
 	enum := Enums{}
-	dbMeta := DbMeta{}
+	dbMeta := databases.DbMeta{}
 	ok, _ := enum.QueryHandler(rows, &dbMeta)
 	assert.Equal(t, ok, true)
 	assert.Equal(t, len(enum.enums), 2)

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"brinch/lib/constants"
+	"brinch/lib/utils/databases"
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -27,7 +28,7 @@ func TestStoredProcedureQueryHandler(t *testing.T) {
 		ToPgxRows()
 
 	procedures := StoredProcedures{}
-	dbMeta := DbMeta{}
+	dbMeta := databases.DbMeta{}
 	ok, err := procedures.QueryHandler(rows, &dbMeta)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, ok, true)

@@ -1,18 +1,13 @@
-package utils
+package databases
 
 import (
 	"context"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type PostgresTypeCategory string
-
-type DbMeta struct {
-	SourceType SourceType
-}
 
 const (
 	ArrayType      PostgresTypeCategory = "A"
@@ -32,39 +27,41 @@ const (
 	UnknownType    PostgresTypeCategory = "X"
 )
 
-func (category PostgresTypeCategory) ToJsonType() SchemaType {
-	switch category {
-	case ArrayType:
-		return Array
-	case BooleanType:
-		return Boolean
-	case UserDefineType:
-	case CompositeType:
-		return Object
-	case DateType:
-	case EnumType:
-	case GeometricType:
-	case NetworkType:
-	case PseudoType:
-	case RangeType:
-	case BitStringType:
-	case TimespanType:
-	case StringType:
-		return String
-	case NumericType:
-		return Number
-	case UnknownType:
-		return Null
-	}
-	return Null
-}
+//func (category PostgresTypeCategory) ToJsonType() JsonSchema.SchemaType {
+//	switch category {
+//	case ArrayType:
+//		return JsonSchema.Array
+//	case BooleanType:
+//		return JsonSchema.Boolean
+//	case UserDefineType:
+//	case CompositeType:
+//		return JsonSchema.Object
+//	case DateType:
+//	case EnumType:
+//	case GeometricType:
+//	case NetworkType:
+//	case PseudoType:
+//	case RangeType:
+//	case BitStringType:
+//	case TimespanType:
+//	case StringType:
+//		return JsonSchema.String
+//	case NumericType:
+//		return JsonSchema.Number
+//	case UnknownType:
+//		return JsonSchema.Null
+//	}
+//	return JsonSchema.Null
+//}
 
 type QueryHandler func(rows pgx.Rows, meta *DbMeta) (bool, error)
 
 func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	dbUrl := viper.GetString("db.config.url")
 	conn, err := pgx.Connect(context.Background(), dbUrl)
-	cobra.CheckErr(err)
+	if err != nil {
+		return false, err
+	}
 	defer func(conn *pgx.Conn, ctx context.Context) {
 		err := conn.Close(ctx)
 		if err != nil {
@@ -73,7 +70,9 @@ func QueryDB(query *string, handler QueryHandler) (bool, error) {
 	}(conn, context.Background())
 
 	rows, err := conn.Query(context.Background(), *query)
-	cobra.CheckErr(err)
+	if err != nil {
+		return false, err
+	}
 
 	// rows.Close is called by rows.Next when all rows are read
 	// or an error occurs in Next or Scan. So it may optionally be

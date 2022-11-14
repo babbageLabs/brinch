@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"brinch/lib/utils/databases"
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -20,20 +21,15 @@ type SchemaTypeMapping struct {
 
 type SchemaTypeMappingMap struct {
 	mappings    []SchemaTypeMapping
-	source      SourceType
+	source      databases.SourceType
 	destination DestinationType
 }
 
-type SourceType string
 type DestinationType string
 
 const (
-	Postgres SourceType = "postgres"
-)
-
-const (
-	Grpc DestinationType = "grpc"
-	//JsonSchema DestinationType = "jsonSchema"
+	Grpc       DestinationType = "grpc"
+	JsonSchema DestinationType = "jsonSchema"
 )
 
 func (mapping *SchemaTypeMappingMap) ToMap() map[string]string {
@@ -79,7 +75,7 @@ func (mapping *SchemaTypeMappingMap) GetSourceURl() string {
 	return fmt.Sprintf("%s/%s/%s", GetMappingsUrl, mapping.source, mapping.destination)
 }
 
-func ResolveTypeMappings(dbType string, source SourceType, destination DestinationType) (string, error) {
+func ResolveTypeMappings(dbType string, source databases.SourceType, destination DestinationType) (string, error) {
 	// TODO optimize this function by introducing caching
 	mapping := SchemaTypeMappingMap{source: source, destination: destination}
 	_, err := mapping.GetMappings(mapping.GetSourceURl())

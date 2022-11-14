@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"brinch/lib/utils"
+	"brinch/lib/utils/databases"
 	"fmt"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
@@ -45,7 +46,7 @@ func TestService_ToProto(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 	// Exact URL match
 	utils.GetMappingsUrl = "http://127.0.0.1"
-	httpmock.RegisterResponder("GET", fmt.Sprintf("%s/%s/%s", utils.GetMappingsUrl, utils.Postgres, utils.Grpc),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("%s/%s/%s", utils.GetMappingsUrl, databases.Postgres, utils.Grpc),
 		httpmock.NewStringResponder(200, `[{"key": "_permission_tt", "value": "value"}]`))
 
 	var routes []Route

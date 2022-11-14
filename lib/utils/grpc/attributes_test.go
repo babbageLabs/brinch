@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"brinch/lib/utils"
+	"brinch/lib/utils/databases"
 	"database/sql"
 	"fmt"
 	"github.com/jarcoal/httpmock"
@@ -51,12 +52,12 @@ func TestAttribute_FromStoredProcedureParameter(t *testing.T) {
 		DataType:         "",
 		UdtName:          "key",
 		ParameterDefault: sql.NullString{},
-		Source:           utils.Postgres,
+		Source:           databases.Postgres,
 	}
 
 	// Exact URL match
 	utils.GetMappingsUrl = "https://api.mybiz.com/articles"
-	httpmock.RegisterResponder("GET", fmt.Sprintf("%s/%s/%s", utils.GetMappingsUrl, utils.Postgres, utils.Grpc),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("%s/%s/%s", utils.GetMappingsUrl, databases.Postgres, utils.Grpc),
 		httpmock.NewStringResponder(200, `[{"key": "key", "value": "value"}]`))
 
 	ok, err := attr.FromStoredProcedureParameter(&param, 1)

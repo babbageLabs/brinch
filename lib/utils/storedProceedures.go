@@ -2,6 +2,8 @@ package utils
 
 import (
 	"brinch/lib/constants"
+	JsonSchema2 "brinch/lib/utils/JsonSchema"
+	"brinch/lib/utils/databases"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -23,7 +25,7 @@ func (procedures *StoredProcedures) GetSps() []StoredProcedure {
 	return sps
 }
 
-func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *DbMeta) (bool, error) {
+func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *databases.DbMeta) (bool, error) {
 	procedures.sps = make(map[string]StoredProcedure)
 	count := 0
 
@@ -54,8 +56,8 @@ func (procedures *StoredProcedures) QueryHandler(rows pgx.Rows, meta *DbMeta) (b
 	return true, nil
 }
 
-func (procedures *StoredProcedures) ToJsonSchema() (Schemas, error) {
-	var schemas []JSONSchemaBase
+func (procedures *StoredProcedures) ToJsonSchema() (JsonSchema2.Schemas, error) {
+	var schemas []JsonSchema2.JSONSchemaBase
 
 	for _, value := range procedures.sps {
 		schemas = append(schemas, value.ToJsonSchema())

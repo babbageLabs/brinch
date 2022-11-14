@@ -1,6 +1,8 @@
 package utils
 
 import (
+	JsonSchema2 "brinch/lib/utils/JsonSchema"
+	"brinch/lib/utils/databases"
 	"database/sql"
 )
 
@@ -14,7 +16,7 @@ const (
 
 // StoredProcedure stored procedures types
 type StoredProcedure struct {
-	Source     SourceType
+	Source     databases.SourceType
 	Name       string
 	Parameters []StoredProcedureParameter
 }
@@ -29,28 +31,29 @@ type StoredProcedureParameter struct {
 	DataType         string
 	UdtName          string
 	ParameterDefault sql.NullString
-	Source           SourceType
+	Source           databases.SourceType
 }
 
 // CustomTypeAttr An Attribute belonging to a custom type as defined in the db
 type CustomTypeAttr struct {
 	AttrName         string
 	TypeName         string
-	TypeCategory     PostgresTypeCategory
+	TypeCategory     databases.PostgresTypeCategory
 	AttrTypeName     string
-	AttrTypeCategory PostgresTypeCategory
+	AttrTypeCategory databases.PostgresTypeCategory
+	Source           databases.SourceType
 }
 
 // CustomTypeAttrs A slice of CustomTypeAttr with methods
 type CustomTypeAttrs []CustomTypeAttr
 
-func (sp *StoredProcedure) ToJsonSchema() JSONSchemaBase {
-	return JSONSchemaBase{
+func (sp *StoredProcedure) ToJsonSchema() JsonSchema2.JSONSchemaBase {
+	return JsonSchema2.JSONSchemaBase{
 		Id:          sp.Name,
 		Description: "An application route",
 		Required:    sp.getRequiredProperties(),
 		Properties:  sp.getProperties(),
-		SchemaType:  Object,
+		SchemaType:  JsonSchema2.Object,
 	}
 }
 
@@ -66,8 +69,8 @@ func (sp *StoredProcedure) getRequiredProperties() []string {
 	return required
 }
 
-func (sp *StoredProcedure) getProperties() JSONSchemaProperties {
-	var properties = JSONSchemaProperties{}
+func (sp *StoredProcedure) getProperties() JsonSchema2.JSONSchemaProperties {
+	var properties = JsonSchema2.JSONSchemaProperties{}
 
 	for _, param := range sp.Parameters {
 		dataType := param.DataType
@@ -77,7 +80,7 @@ func (sp *StoredProcedure) getProperties() JSONSchemaProperties {
 			dataType = param.UdtName
 		}
 
-		properties[param.ParameterName] = JSONSchemaProperty{
+		properties[param.ParameterName] = JsonSchema2.JSONSchemaProperty{
 			Type: dataType,
 		}
 	}
@@ -109,11 +112,11 @@ func (sp *StoredProcedure) GetResponse() []StoredProcedureParameter {
 	return res
 }
 
-func (attrs CustomTypeAttrs) ToJsonSchemaProperties() JSONSchemaProperties {
-	properties := make(JSONSchemaProperties)
+func (attrs CustomTypeAttrs) ToJsonSchemaProperties() JsonSchema2.JSONSchemaProperties {
+	properties := make(JsonSchema2.JSONSchemaProperties)
 	for _, attr := range attrs {
-		properties[attr.AttrName] = JSONSchemaProperty{
-			Type: string(attr.AttrTypeCategory.ToJsonType()),
+		properties[attr.AttrName] = JsonSchema2.JSONSchemaProperty{
+			Type: string(attr.AttrTypeCategory),
 		}
 	}
 

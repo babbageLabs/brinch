@@ -1,14 +1,14 @@
-package utils
+package JsonSchema
 
 import (
+	"brinch/lib/utils/files"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -65,52 +65,53 @@ type JSONSchemaBase struct {
 	Properties  JSONSchemaProperties `json:"properties,omitempty"`
 }
 
-func (jsonInput *JSONSchemaBase) ToFile() {
-	dirPath := viper.GetString("jsonSchema.targetPath")
-	port := viper.GetString("jsonSchema.server.port")
-	jsonInput.AppendDefaultProperties()
-
-	filePath := jsonInput.Id
-	fmt.Printf("file path is %s\n", filePath)
-
+func (jsonInput *JSONSchemaBase) GetDirPath(dirPath string) (string, error) {
 	if dirPath == "" {
 		path, err := os.Getwd()
-		cobra.CheckErr(err)
-
+		if err != nil {
+			return "", err
+		}
 		dirPath = filepath.Join(path, "api", "json")
 	}
 
-	if port != "" {
-		jsonInput.Id = "http://localhost:" + port + "/" + jsonInput.Name
+	return dirPath, nil
+}
+
+func (jsonInput *JSONSchemaBase) GetJsonServerHost(jsonServerHost string) string {
+	if jsonServerHost != "" {
+		jsonInput.Id = jsonServerHost + "/" + jsonInput.Name
 	}
 
-	content, err := json.Marshal(jsonInput)
-	cobra.CheckErr(err)
+	return jsonInput.Id
+}
 
-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-		err := os.Mkdir(dirPath, 0660)
-		cobra.CheckErr(err)
-	}
+func (jsonInput *JSONSchemaBase) ToBytes(jsonServerHost string) ([]byte, error) {
+	jsonInput.AppendDefaultProperties()
+	jsonInput.Id = jsonInput.GetJsonServerHost(jsonServerHost)
 
-	err = ioutil.WriteFile(filePath, content, 0644)
-	if err != nil {
-		cobra.CheckErr(err)
-	}
+	return json.Marshal(jsonInput)
 }
 
 func (jsonInput *JSONSchemaBase) AppendDefaultProperties() {
 	schema := viper.GetString("jsonSchema.schema")
-	path := viper.GetString("jsonSchema.targetPath")
-
 	jsonInput.Schema = schema
 	jsonInput.Name = jsonInput.Id + ".schema" + ".json"
 	jsonInput.Title = cases.Title(language.English, cases.Compact).String(jsonInput.Id)
-	jsonInput.Id = filepath.Join(path, jsonInput.Name)
-
 }
 
-func (schemas Schemas) Export() {
-	for _, schema := range schemas {
-		schema.ToFile()
+func (schemas *Schemas) Export(dirPath string, jsonServerHost string) {
+	for _, schema := range *schemas {
+		dirPath, err := schema.GetDirPath(dirPath)
+		filePath := filepath.Join(dirPath, schema.Name)
+		bytes, err := schema.ToBytes(jsonServerHost)
+		if err != nil {
+			logrus.Error(fmt.Sprintf("error preparing %s for writting to disk. the file will be skipped \n %s", schema.Id, err))
+		} else {
+			_, err := files.WriteToFile(filePath, bytes)
+			if err != nil {
+				logrus.Error(fmt.Sprintf("error writting %s to disk. \n %s", schema.Id, err))
+			}
+			logrus.Info(fmt.Sprintf("%s written to disk successfully", schema.Id))
+		}
 	}
 }
