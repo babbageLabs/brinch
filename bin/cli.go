@@ -1,4 +1,4 @@
-package cmds
+package bin
 
 import "github.com/urfave/cli/v2"
 

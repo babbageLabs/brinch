@@ -1,18 +1,23 @@
 package bin
 
 import (
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 )
 
 type Config struct {
-	db struct {
+	Db struct {
 		Url              string `yaml:"url"`
 		Engine           string `yaml:"engine"`
 		Scripts          string `yaml:"scripts"`
 		FileMatchPattern string `yaml:"fileMatchPattern"`
 	} `yaml:"db"`
+	Logging struct {
+		Level logrus.Level
+	} `yaml:"logging"`
 }
 
 func (config *Config) ReadConfig(path string) (bool, error) {
@@ -37,4 +42,18 @@ func (config *Config) ReadConfig(path string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func MustReadConfig(cCtx *cli.Context) Config {
+	config := Config{}
+	path := cCtx.String(ConfigFlag.Name)
+	if path != "" {
+		ok, _ := config.ReadConfig(path)
+		if ok {
+			return config
+		}
+	}
+	Logger.Fatal("Error reading application configuration")
+
+	return Config{}
 }

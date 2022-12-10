@@ -8,25 +8,26 @@ import (
 )
 
 type Seed struct {
-	path             string
-	fileMatchPattern string
-	db               *sql.DB
+	Path             string
+	FileMatchPattern string
+	Db               *sql.DB
 }
 
 // Scan traverse a path and discover or paths that match a specific pattern in lexical order
 func (seed *Seed) Scan() ([]string, error) {
 	var files []string
 
-	err := filepath.WalkDir(seed.path, func(path string, info fs.DirEntry, err error) error {
+	err := filepath.WalkDir(seed.Path, func(path string, info fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
 		if !info.IsDir() {
-			match, err := regexp.MatchString(seed.fileMatchPattern, info.Name())
+			match, err := regexp.MatchString(seed.FileMatchPattern, info.Name())
 			if err != nil {
 				return err
 			}
+			Logger.Info("Collecting file to seed to seed ", info.Name())
 			if match {
 				files = append(files, path)
 			}
@@ -48,10 +49,13 @@ func (seed *Seed) Seed() (bool, error) {
 	}
 
 	for _, path := range paths {
+		Logger.Info("Preparing to seed ", path)
 		_, err := seed.SeedFile(&path)
 		if err != nil {
+			Logger.Info("Seeding failed for ", path, " with error ", err)
 			return false, err
 		}
+		Logger.Info("Seeding completed for ", path)
 	}
 
 	return true, nil
@@ -67,7 +71,7 @@ func (seed *Seed) SeedFile(path *string) (res []sql.Result, err error) {
 	}
 	// Execute the stored queries
 	// transaction is used to execute queries in Exec()
-	r, e := s.Exec(seed.db)
+	r, e := s.Exec(seed.Db)
 
 	return r, e
 }

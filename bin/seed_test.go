@@ -1,6 +1,7 @@
 package bin
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -9,8 +10,8 @@ import (
 
 func TestSeed_ScanSuccess(t *testing.T) {
 	seed := &Seed{
-		path:             "../testdata",
-		fileMatchPattern: "^.*\\.(sql)$",
+		Path:             "../testdata",
+		FileMatchPattern: "^.*\\.(sql)$",
 	}
 
 	files, err := seed.Scan()
@@ -20,8 +21,8 @@ func TestSeed_ScanSuccess(t *testing.T) {
 
 func TestSeed_ScanNonExistentPath(t *testing.T) {
 	seed := &Seed{
-		path:             "../testdatas",
-		fileMatchPattern: "^.*\\.(sql)$",
+		Path:             "../testdatas",
+		FileMatchPattern: "^.*\\.(sql)$",
 	}
 
 	_, err := seed.Scan()
@@ -30,8 +31,8 @@ func TestSeed_ScanNonExistentPath(t *testing.T) {
 
 func TestSeed_ScanInvalidRegex(t *testing.T) {
 	seed := &Seed{
-		path:             "../testdata",
-		fileMatchPattern: "`[ ]\\K(?<!\\d )(?=(?: ?\\d){8})(?!(?: ?\\d){9})\\d[ \\d]+\\d`",
+		Path:             "../testdata",
+		FileMatchPattern: "`[ ]\\K(?<!\\d )(?=(?: ?\\d){8})(?!(?: ?\\d){9})\\d[ \\d]+\\d`",
 	}
 
 	_, err := seed.Scan()
@@ -41,7 +42,12 @@ func TestSeed_ScanInvalidRegex(t *testing.T) {
 func TestSeed_SeedSuccess(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			Logger.Fatal(err)
+		}
+	}(db)
 
 	// Initialize SqlFile
 	s := NewSqlFile()
@@ -55,9 +61,9 @@ func TestSeed_SeedSuccess(t *testing.T) {
 	mock.ExpectCommit()
 
 	seed := &Seed{
-		path:             "../testdata",
-		fileMatchPattern: "^expected\\.sql$",
-		db:               db,
+		Path:             "../testdata",
+		FileMatchPattern: "^expected\\.sql$",
+		Db:               db,
 	}
 
 	_, err = seed.Seed()
