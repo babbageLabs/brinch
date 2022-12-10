@@ -2,7 +2,6 @@ package bin
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -54,11 +53,12 @@ func TestSeed_SeedSuccess(t *testing.T) {
 	e := s.LoadFile("../testdata/expected.sql")
 	assert.NoError(t, e)
 	// before we actually execute our api function, we need to expect required DB actions
-	rows := sqlmock.NewRows([]string{"id", "user_id", "title", "content"}).
-		AddRow(1, 1, "Self Introduction", "-- sqlfile --\\nI'm sqlfile.")
+	var lastInsertID, affected int64
+	rows := sqlmock.NewResult(lastInsertID, affected)
 	mock.ExpectBegin()
-	mock.ExpectQuery(s.queries[0]).WillReturnRows(rows)
+	mock.ExpectExec(s.queries[0]).WillReturnResult(rows)
 	mock.ExpectCommit()
+	mock.ExpectClose()
 
 	seed := &Seed{
 		Path:             "../testdata",
@@ -66,10 +66,6 @@ func TestSeed_SeedSuccess(t *testing.T) {
 		Db:               db,
 	}
 
-	_, err = seed.Seed()
-	if err != nil {
-		fmt.Printf("%s", err)
-		//TODO fix this test case
-	}
-	//assert.NoError(t, err)
+	_, e = seed.Seed()
+	assert.NoError(t, e)
 }

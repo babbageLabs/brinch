@@ -79,6 +79,7 @@ func (s *SqlFile) Exec(db *sql.DB) (res []sql.Result, err error) {
 
 	var rs []sql.Result
 	for _, q := range s.queries {
+		Logger.Debug(q)
 		r, err := tx.Exec(q)
 		if err != nil {
 			return res, fmt.Errorf(err.Error() + " : when executing > " + q)

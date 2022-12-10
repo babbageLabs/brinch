@@ -27,8 +27,8 @@ func (seed *Seed) Scan() ([]string, error) {
 			if err != nil {
 				return err
 			}
-			Logger.Info("Collecting file to seed to seed ", info.Name())
 			if match {
+				Logger.Info("Collecting file to seed to seed ", info.Name())
 				files = append(files, path)
 			}
 		}
