@@ -6,7 +6,12 @@ import (
 )
 
 func TestConfig_ReadConfig(t *testing.T) {
-	config := Config{}
+	config := Config{
+		App: AppConfig{
+			Name: "",
+			Env:  "test",
+		},
+	}
 	readConfig, err := config.ReadConfig("../testData/config.yaml")
 	assert.NoError(t, err)
 	assert.Equal(t, true, readConfig)

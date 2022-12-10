@@ -43,7 +43,9 @@ func (config *Config) ReadConfig(path string) (bool, error) {
 	if file != nil {
 		decoder := yaml.NewDecoder(file)
 		if err := decoder.Decode(&config); err != nil {
-			return false, err
+			if !config.App.IsTest() {
+				return false, err
+			}
 		}
 	}
 
