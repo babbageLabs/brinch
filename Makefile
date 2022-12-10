@@ -15,3 +15,6 @@ test:
 
 coverage:
 	go test -v ./... -cover
+
+lint:
+	golangci-lint run

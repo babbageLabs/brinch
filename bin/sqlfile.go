@@ -71,17 +71,17 @@ func (s *SqlFile) Directory(dir string) error {
 
 // Exec execute SQL statements written int the specified sql file
 func (s *SqlFile) Exec(db *sql.DB) (res []sql.Result, err error) {
+	var rs []sql.Result
 	tx, err := db.Begin()
 	if err != nil {
 		return res, err
 	}
 	defer saveTx(tx, &err)
-
-	var rs []sql.Result
 	for _, q := range s.queries {
 		Logger.Debug(q)
 		r, err := tx.Exec(q)
 		if err != nil {
+			Logger.Debug(err)
 			return res, fmt.Errorf(err.Error() + " : when executing > " + q)
 		}
 		rs = append(rs, r)
@@ -106,20 +106,23 @@ func readFileContents(path string) (ls []string, err error) {
 	}
 	var temp []string
 
-	//ls = strings.Split(string(f), "\n")
+	// ls = strings.Split(string(f), "\n")
 	return append(temp, string(f)), nil
 }
 
 func saveTx(tx *sql.Tx, err *error) {
 	if p := recover(); p != nil {
 		e := tx.Rollback()
-		err = &e
-		panic(p)
+		Logger.Panic(e)
 	} else if *err != nil {
-		e := tx.Rollback()
-		err = &e
+		err := tx.Rollback()
+		if err != nil {
+			Logger.Error(err)
+		}
 	} else {
-		e := tx.Commit()
-		err = &e
+		err := tx.Commit()
+		if err != nil {
+			Logger.Error(err)
+		}
 	}
 }
