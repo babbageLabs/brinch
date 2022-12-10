@@ -29,7 +29,9 @@ type Config struct {
 func (config *Config) ReadConfig(path string) (bool, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return false, err
+		if !config.App.IsTest() {
+			return false, err
+		}
 	}
 
 	defer func(file *os.File) {
