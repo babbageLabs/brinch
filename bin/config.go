@@ -4,13 +4,18 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v3"
-	"log"
 	"os"
+	"strings"
 )
 
+type AppConfig struct {
+	Name string
+	Env  string
+}
+
 type Config struct {
-	Db struct {
-		Url              string `yaml:"url"`
+	DB struct {
+		URL              string `yaml:"url"`
 		Engine           string `yaml:"engine"`
 		Scripts          string `yaml:"scripts"`
 		FileMatchPattern string `yaml:"fileMatchPattern"`
@@ -18,6 +23,7 @@ type Config struct {
 	Logging struct {
 		Level logrus.Level
 	} `yaml:"logging"`
+	App AppConfig `yaml:"app"`
 }
 
 func (config *Config) ReadConfig(path string) (bool, error) {
@@ -29,7 +35,7 @@ func (config *Config) ReadConfig(path string) (bool, error) {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			log.Printf("error closing file read")
+			Logger.Fatal("error closing file read")
 		}
 	}(file)
 
@@ -56,4 +62,9 @@ func MustReadConfig(cCtx *cli.Context) Config {
 	Logger.Fatal("Error reading application configuration")
 
 	return Config{}
+}
+
+// IsTest return if the application is running in test mode. useful in running tests
+func (config *AppConfig) IsTest() bool {
+	return strings.ToLower(config.Env) == "test"
 }

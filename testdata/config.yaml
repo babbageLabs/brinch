@@ -1,0 +1,5 @@
+db:
+  url: 'postgres://user:password@localhost:5432/test?sslmode=disable'
+  engine: 'postgres'
+  scripts: '.'
+  fileMatchPattern: '^.*\.(sql)$'

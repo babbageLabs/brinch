@@ -10,7 +10,7 @@ import (
 type Seed struct {
 	Path             string
 	FileMatchPattern string
-	Db               *sql.DB
+	DB               *sql.DB
 }
 
 // Scan traverse a path and discover or paths that match a specific pattern in lexical order
@@ -50,7 +50,7 @@ func (seed *Seed) Seed() (bool, error) {
 
 	for _, path := range paths {
 		Logger.Info("Preparing to seed ", path)
-		_, err := seed.SeedFile(&path)
+		_, err := seed.SeedFile(path)
 		if err != nil {
 			Logger.Info("Seeding failed for ", path, " with error ", err)
 			return false, err
@@ -61,17 +61,17 @@ func (seed *Seed) Seed() (bool, error) {
 	return true, nil
 }
 
-func (seed *Seed) SeedFile(path *string) (res []sql.Result, err error) {
+func (seed *Seed) SeedFile(path string) (res []sql.Result, err error) {
 	// Initialize SqlFile
 	s := NewSqlFile()
 	// Load input file and store queries written in the file
-	e := s.LoadFile(*path)
+	e := s.LoadFile(path)
 	if e != nil {
 		return nil, err
 	}
 	// Execute the stored queries
 	// transaction is used to execute queries in Exec()
-	r, e := s.Exec(seed.Db)
+	r, e := s.Exec(seed.DB)
 
 	return r, e
 }

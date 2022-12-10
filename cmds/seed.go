@@ -12,9 +12,9 @@ var SeedCmd = &cli.Command{
 	Action: func(cCtx *cli.Context) error {
 		config := bin.MustReadConfig(cCtx)
 		seed := bin.Seed{
-			Path:             config.Db.Scripts,
-			FileMatchPattern: config.Db.FileMatchPattern,
-			Db:               bin.MustOpenDbConnection(&config),
+			Path:             config.DB.Scripts,
+			FileMatchPattern: config.DB.FileMatchPattern,
+			DB:               bin.MustOpenDBConnection(&config),
 		}
 
 		_, err := seed.Seed()

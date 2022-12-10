@@ -21,7 +21,12 @@ func newMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 func TestExec_Commit(t *testing.T) {
 	t.Helper()
 	db, mock := newMockDB(t)
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			Logger.Fatal(err)
+		}
+	}(db)
 
 	tests := []struct {
 		query  string
@@ -44,7 +49,7 @@ func TestExec_Commit(t *testing.T) {
 
 	mock.ExpectCommit()
 
-	s := SqlFile{queries: qs}
+	s := SQLFile{queries: qs}
 
 	if _, err := s.Exec(db); err != nil {
 		t.Errorf("test error: %s", err)
@@ -58,7 +63,12 @@ func TestExec_Commit(t *testing.T) {
 func TestExec_Rollback(t *testing.T) {
 	t.Helper()
 	db, mock := newMockDB(t)
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			Logger.Fatal(err)
+		}
+	}(db)
 
 	query := `INSERT INTO non_existing_table (id) values (1)`
 	qs := []string{query}
@@ -68,7 +78,7 @@ func TestExec_Rollback(t *testing.T) {
 		WillReturnError(errors.New("Error 1146: Table 'tmp.non_existing_table' doesn't exist"))
 	mock.ExpectRollback()
 
-	s := SqlFile{queries: qs}
+	s := SQLFile{queries: qs}
 
 	_, err := s.Exec(db)
 	if err != nil {

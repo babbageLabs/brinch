@@ -63,7 +63,7 @@ func TestSeed_SeedSuccess(t *testing.T) {
 	seed := &Seed{
 		Path:             "../testdata",
 		FileMatchPattern: "^expected\\.sql$",
-		Db:               db,
+		DB:               db,
 	}
 
 	_, e = seed.Seed()

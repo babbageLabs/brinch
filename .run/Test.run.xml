@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="brinch2" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-v ./..." />
+    <kind value="DIRECTORY" />
+    <package value="github.com/babbageLabs/brinch/bin" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <framework value="gotest" />
+    <pattern value="^\QTestSeed_ScanNonExistentPath\E$" />
+    <method v="2" />
+  </configuration>
+</component>

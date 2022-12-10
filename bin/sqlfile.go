@@ -10,19 +10,19 @@ import (
 	"io/ioutil"
 )
 
-// SqlFile represents a queries holder
-type SqlFile struct {
+// SQLFile SqlFile represents a queries holder
+type SQLFile struct {
 	files   []string
 	queries []string
 }
 
 // NewSqlFile create new SqlFile object
-func NewSqlFile() *SqlFile {
-	return &SqlFile{}
+func NewSqlFile() *SQLFile {
+	return &SQLFile{}
 }
 
 // LoadFile add and load queries from input file
-func (s *SqlFile) LoadFile(file string) error {
+func (s *SQLFile) LoadFile(file string) error {
 	queries, err := load(file)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (s *SqlFile) LoadFile(file string) error {
 }
 
 // LoadFiles add and load queries from multiple input files
-func (s *SqlFile) LoadFiles(files ...string) error {
+func (s *SQLFile) LoadFiles(files ...string) error {
 	for _, file := range files {
 		if err := s.LoadFile(file); err != nil {
 			return err
@@ -45,7 +45,7 @@ func (s *SqlFile) LoadFiles(files ...string) error {
 }
 
 // Directory add and load queries from *.sql files in specified directory
-func (s *SqlFile) Directory(dir string) error {
+func (s *SQLFile) Directory(dir string) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (s *SqlFile) Directory(dir string) error {
 }
 
 // Exec execute SQL statements written int the specified sql file
-func (s *SqlFile) Exec(db *sql.DB) (res []sql.Result, err error) {
+func (s *SQLFile) Exec(db *sql.DB) (res []sql.Result, err error) {
 	var rs []sql.Result
 	tx, err := db.Begin()
 	if err != nil {
