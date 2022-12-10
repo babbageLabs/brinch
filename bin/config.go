@@ -36,7 +36,7 @@ func (config *Config) ReadConfig(path string) (bool, error) {
 
 	defer func(file *os.File) {
 		err := file.Close()
-		if err != nil {
+		if err != nil && !config.App.IsTest() {
 			Logger.Fatal("error closing file read")
 		}
 	}(file)
