@@ -66,7 +66,7 @@ func TestExec_Rollback(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-			Logger.Fatal(err)
+			Logger.Info(err)
 		}
 	}(db)
 
