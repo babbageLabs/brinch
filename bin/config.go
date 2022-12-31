@@ -15,13 +15,14 @@ type AppConfig struct {
 
 type Config struct {
 	DB struct {
-		URL              string `yaml:"url"`
-		Engine           string `yaml:"engine"`
-		Scripts          string `yaml:"scripts"`
-		FileMatchPattern string `yaml:"fileMatchPattern"`
+		URL              string   `yaml:"url"`
+		Engine           string   `yaml:"engine"`
+		Scripts          string   `yaml:"scripts"`
+		FileMatchPattern string   `yaml:"fileMatchPattern"`
+		SeedMode         SeedMode `yaml:"seedMode"`
 	} `yaml:"db"`
 	Logging struct {
-		Level logrus.Level
+		Level logrus.Level `yaml:"level"`
 	} `yaml:"logging"`
 	App AppConfig `yaml:"app"`
 }

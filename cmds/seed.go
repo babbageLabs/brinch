@@ -15,6 +15,7 @@ var SeedCmd = &cli.Command{
 			Path:             config.DB.Scripts,
 			FileMatchPattern: config.DB.FileMatchPattern,
 			DB:               bin.MustOpenDBConnection(&config),
+			Mode:             config.DB.SeedMode,
 		}
 
 		_, err := seed.Seed()

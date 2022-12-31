@@ -93,7 +93,7 @@ func TestExec_Rollback(t *testing.T) {
 func TestFile_NotFound(t *testing.T) {
 	t.Helper()
 
-	s := NewSqlFile()
+	s := NewSQLFile()
 	err := s.LoadFile("./testdata/non_exisiting.sql")
 
 	assert.NotEqual(t, nil, err)
@@ -102,7 +102,7 @@ func TestFile_NotFound(t *testing.T) {
 func TestFiles_Success(t *testing.T) {
 	t.Helper()
 
-	s := NewSqlFile()
+	s := NewSQLFile()
 	err := s.LoadFiles(
 		"../testdata/include_comments.sql",
 		"../testdata/not_include_comments.sql",
@@ -117,7 +117,7 @@ func TestFiles_Success(t *testing.T) {
 func TestDirectory_Success(t *testing.T) {
 	t.Helper()
 
-	s := NewSqlFile()
+	s := NewSQLFile()
 	err := s.Directory("../testdata")
 	if err != nil {
 		t.Fatalf(err.Error())
@@ -129,7 +129,7 @@ func TestDirectory_Success(t *testing.T) {
 func TestDirectory_NotFound(t *testing.T) {
 	t.Helper()
 
-	s := NewSqlFile()
+	s := NewSQLFile()
 	err := s.Directory(
 		"./non_exisiting",
 	)

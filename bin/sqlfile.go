@@ -16,8 +16,8 @@ type SQLFile struct {
 	queries []string
 }
 
-// NewSqlFile create new SqlFile object
-func NewSqlFile() *SQLFile {
+// NewSQLFile create new SqlFile object
+func NewSQLFile() *SQLFile {
 	return &SQLFile{}
 }
 

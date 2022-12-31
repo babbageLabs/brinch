@@ -49,7 +49,7 @@ func TestSeed_SeedSuccess(t *testing.T) {
 	}(db)
 
 	// Initialize SqlFile
-	s := NewSqlFile()
+	s := NewSQLFile()
 	e := s.LoadFile("../testdata/expected.sql")
 	assert.NoError(t, e)
 	// before we actually execute our api function, we need to expect required DB actions
@@ -64,6 +64,7 @@ func TestSeed_SeedSuccess(t *testing.T) {
 		Path:             "../testdata",
 		FileMatchPattern: "^expected\\.sql$",
 		DB:               db,
+		Mode:             Sequential,
 	}
 
 	_, e = seed.Seed()
