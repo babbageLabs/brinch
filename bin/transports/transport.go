@@ -8,7 +8,7 @@ type Response struct {
 	meta *MetaData
 }
 
-type Transport interface {
+type ITransport interface {
 	Connect() (bool, error)
 	Close() (bool, error)
 	Exec(subject string, msg []byte, meta *MetaData) (*Response, error)

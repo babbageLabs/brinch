@@ -20,7 +20,7 @@ type ICallable interface {
 	GetResParams() *Params
 
 	GetSubject() string // ge the name of the topic in Nats
-	transports.Transport
+	transports.ITransport
 }
 
 func (params *Params) Marshal() ([]byte, error) {

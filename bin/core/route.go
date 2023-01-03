@@ -1,18 +1,31 @@
 package core
 
+import "github.com/babbageLabs/brinch/bin/transports"
+
+type ParameterMode string
+
+const (
+	IN    ParameterMode = "IN"
+	OUT   ParameterMode = "OUT"
+	INOUT ParameterMode = "INOUT"
+)
+
 type Param struct {
-	Name  string
-	Value []byte
-	Type  string
-	err   error
+	Name    string
+	Value   []byte
+	Type    string
+	err     error
+	Mode    ParameterMode
+	isArray bool
 }
 
 type Route struct {
+	NameSpace        string
 	Name             string
 	Parameters       []Param
-	Response         []Param
 	validateRequest  bool
 	validateResponse bool
+	transports.ITransport
 }
 
 // ########################## Params
@@ -26,7 +39,15 @@ func (param *Param) Validate() (bool, error) {
 	return false, nil
 }
 
-// ################################ Routes
+func (param *Param) IsInput() bool {
+	return param.Mode != OUT
+}
+
+func (param *Param) IsOutPut() bool {
+	return param.Mode != IN
+}
+
+// ################################ StoredProcedures
 
 func (route *Route) Validate(params []IValidatable) (bool, error) {
 	return Validate(params)
@@ -38,4 +59,37 @@ func (route *Route) MustValidateRequest() bool {
 
 func (route *Route) MustValidateResponse() bool {
 	return route.validateResponse
+}
+
+func (route *Route) GetReqParams() Params {
+	var params Params
+	for _, parameter := range route.Parameters {
+		if parameter.IsInput() {
+			params = append(params, &parameter)
+		}
+	}
+
+	return params
+}
+
+func (route *Route) GetResParams() Params {
+	var params Params
+	for _, parameter := range route.Parameters {
+		if parameter.IsOutPut() {
+			params = append(params, &parameter)
+		}
+	}
+
+	return params
+}
+
+func (route *Route) AddParam(param *Param) bool {
+	for _, parameter := range route.Parameters {
+		if parameter.Name == param.Name && param.Mode == parameter.Mode {
+			return false
+		}
+	}
+	route.Parameters = append(route.Parameters, *param)
+
+	return true
 }
