@@ -1,8 +1,12 @@
 package core
 
-import "database/sql"
+import (
+	"database/sql"
+	"github.com/babbageLabs/brinch/bin"
+	"github.com/babbageLabs/brinch/bin/transports"
+)
 
-const DbNamespace = "DB"
+const DBNamespace = "DB"
 
 type StoredProcedureParam struct {
 	RoutineName      string
@@ -16,20 +20,20 @@ type StoredProcedureParam struct {
 }
 
 type StoredProcedures struct {
-	routes map[string]*Route
-	sps    map[string][]StoredProcedureParam
-	DB     *sql.DB
+	routes    map[string]*Route
+	sps       map[string][]StoredProcedureParam
+	DB        *sql.DB
+	transport transports.ITransport
 }
 
-func (sps *StoredProcedures) Register(route *Route) bool {
-	_, ok := sps.routes[route.Name]
-	if ok {
-		return false
-	}
+func (sps *StoredProcedures) Register(route *Route) {
+	route.NameSpace = DBNamespace
 
-	route.NameSpace = DbNamespace
-	sps.routes[route.Name] = route
-	return true
+	if sps.routes == nil {
+		sps.routes = map[string]*Route{route.Name: route}
+	} else {
+		sps.routes[route.Name] = route
+	}
 }
 
 func (sps *StoredProcedures) Initialize(query string) error {
@@ -41,14 +45,14 @@ func (sps *StoredProcedures) Initialize(query string) error {
 
 	for rows.Next() {
 		sp := StoredProcedureParam{}
-		err := rows.Scan(sp.RoutineSchema,
-			sp.SpecificName,
-			sp.RoutineName,
-			sp.ParameterName,
-			sp.ParameterMode,
-			sp.DataType,
-			sp.UdtName,
-			sp.ParameterDefault,
+		err := rows.Scan(&sp.RoutineSchema,
+			&sp.SpecificName,
+			&sp.RoutineName,
+			&sp.ParameterName,
+			&sp.ParameterMode,
+			&sp.DataType,
+			&sp.UdtName,
+			&sp.ParameterDefault,
 		)
 		if err != nil {
 			return err
@@ -56,16 +60,46 @@ func (sps *StoredProcedures) Initialize(query string) error {
 
 		params, ok := sps.sps[sp.RoutineName]
 		if ok {
+			bin.Logger.Debug("Update routine ", sp.RoutineName, " with a new param ", sp.ParameterName)
 			sps.sps[sp.RoutineName] = append(params, sp)
 		} else {
-			var sl []StoredProcedureParam
-			sps.sps[sp.RoutineName] = append(sl, sp)
+			bin.Logger.Debug("Add new sp ", sp.RoutineName)
+			if sps.sps == nil {
+				sps.sps = map[string][]StoredProcedureParam{sp.RoutineName: {sp}}
+			} else {
+				sps.sps[sp.RoutineName] = append([]StoredProcedureParam{}, sp)
+			}
 		}
 	}
+
+	sps.SPsToRoutes()
 
 	return nil
 }
 
 func (sps *StoredProcedures) SPsToRoutes() {
+	for name, params := range sps.sps {
+		bin.Logger.Debug("Creating new route from stored procedure ", name)
+		route := &Route{
+			NameSpace:        DBNamespace,
+			Name:             name,
+			Parameters:       nil,
+			validateRequest:  true,
+			validateResponse: true,
+			transport:        sps.transport,
+		}
 
+		for _, param := range params {
+			route.AddParam(&Param{
+				Name:    param.ParameterName,
+				Value:   nil,
+				Type:    param.UdtName,
+				err:     nil,
+				Mode:    param.ParameterMode,
+				isArray: param.DataType == "ARRAY",
+			})
+		}
+
+		sps.Register(route)
+	}
 }

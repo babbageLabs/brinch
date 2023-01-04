@@ -26,7 +26,7 @@ func getLogLevel() logrus.Level {
 	var lvl logrus.Level
 	err := lvl.UnmarshalText([]byte(os.Getenv("config.Logging.Level")))
 	if err != nil {
-		return logrus.WarnLevel
+		return logrus.DebugLevel
 	}
 	return lvl
 }

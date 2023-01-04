@@ -16,11 +16,11 @@ type ICallable interface {
 	MustValidateRequest() bool
 	MustValidateResponse() bool
 
-	GetReqParams() *Params
-	GetResParams() *Params
+	GetReqParams() Params
+	GetResParams() Params
 
-	GetSubject() string // ge the name of the topic in Nats
-	transports.ITransport
+	GetSubject() (string, error) // ge the name of the topic in Nats
+	GetTransport() (transports.ITransport, error)
 }
 
 func (params *Params) Marshal() ([]byte, error) {
@@ -28,28 +28,40 @@ func (params *Params) Marshal() ([]byte, error) {
 }
 
 func Call(callable ICallable) (*transports.Response, error) {
+	transport, err := callable.GetTransport()
+	if err != nil {
+		return nil, err
+	}
+
+	subject, err := callable.GetSubject()
+	if err != nil {
+		return nil, err
+	}
+
+	params := callable.GetReqParams()
 	if callable.MustValidateRequest() {
-		_, err := callable.Validate(callable.GetReqParams())
+		_, err := callable.Validate(&params)
 		if err != nil {
 			return &transports.Response{}, err
 		}
 	}
 
-	marshalled, err := callable.GetReqParams().Marshal()
+	marshalled, err := params.Marshal()
 	if err != nil {
-		return &transports.Response{}, err
+		return nil, err
 	}
 
 	meta := &transports.MetaData{}
-	res, err := callable.Exec(callable.GetSubject(), marshalled, meta)
+	res, err := transport.Exec(subject, marshalled, meta)
 	if err != nil {
-		return &transports.Response{}, err
+		return nil, err
 	}
 
 	if callable.MustValidateResponse() {
-		_, err := callable.Validate(callable.GetResParams())
+		params := callable.GetResParams()
+		_, err := callable.Validate(&params)
 		if err != nil {
-			return &transports.Response{}, err
+			return nil, err
 		}
 	}
 
