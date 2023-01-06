@@ -1,11 +1,11 @@
-package transports
+package types
 
 type MetaData struct {
 }
 
 type Response struct {
-	data []byte
-	meta *MetaData
+	Data []byte
+	Meta *MetaData
 }
 
 type ITransport interface {

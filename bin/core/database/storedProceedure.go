@@ -1,9 +1,11 @@
-package core
+package database
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/babbageLabs/brinch/bin"
-	"github.com/babbageLabs/brinch/bin/transports"
+	"github.com/babbageLabs/brinch/bin/core/routing"
+	"github.com/babbageLabs/brinch/bin/core/types"
 )
 
 const DBNamespace = "DB"
@@ -13,26 +15,28 @@ type StoredProcedureParam struct {
 	RoutineSchema    string
 	SpecificName     string
 	ParameterName    string
-	ParameterMode    ParameterMode
+	ParameterMode    types.ParameterMode
 	DataType         string
 	UdtName          string
 	ParameterDefault sql.NullString
 }
 
 type StoredProcedures struct {
-	routes    map[string]*Route
+	routes    map[string]*routing.Route
 	sps       map[string][]StoredProcedureParam
 	DB        *sql.DB
-	transport transports.ITransport
+	transport *types.ITransport
 }
 
-func (sps *StoredProcedures) Register(route *Route) {
-	route.NameSpace = DBNamespace
+func (sps *StoredProcedures) Register(route *routing.Route) {
+	_ = route.SetNameSpace(DBNamespace)
+
+	name, _ := route.GetName()
 
 	if sps.routes == nil {
-		sps.routes = map[string]*Route{route.Name: route}
+		sps.routes = map[string]*routing.Route{name: route}
 	} else {
-		sps.routes[route.Name] = route
+		sps.routes[name] = route
 	}
 }
 
@@ -77,29 +81,53 @@ func (sps *StoredProcedures) Initialize(query string) error {
 	return nil
 }
 
-func (sps *StoredProcedures) SPsToRoutes() {
+func (sps *StoredProcedures) SPsToRoutes() error {
 	for name, params := range sps.sps {
 		bin.Logger.Debug("Creating new route from stored procedure ", name)
-		route := &Route{
+		route := &routing.Route{
 			NameSpace:        DBNamespace,
 			Name:             name,
 			Parameters:       nil,
-			validateRequest:  true,
-			validateResponse: true,
-			transport:        sps.transport,
+			ValidateRequest:  true,
+			ValidateResponse: true,
+			Transport:        sps.transport,
 		}
 
 		for _, param := range params {
-			route.AddParam(&Param{
+			_, err := route.AddParam(&routing.Param{
 				Name:    param.ParameterName,
 				Value:   nil,
 				Type:    param.UdtName,
-				err:     nil,
+				Err:     nil,
 				Mode:    param.ParameterMode,
-				isArray: param.DataType == "ARRAY",
+				IsArray: param.DataType == "ARRAY",
 			})
+			if err != nil {
+				return err
+			}
 		}
 
 		sps.Register(route)
 	}
+
+	return nil
+}
+
+func (sps *StoredProcedures) SetTransport(transport types.ITransport) error {
+	sps.transport = &transport
+
+	return nil
+}
+
+func (sps *StoredProcedures) GetRoute(name string) (*routing.Route, error) {
+	route, ok := sps.routes[name]
+	if ok {
+		return route, nil
+	}
+
+	return nil, fmt.Errorf(fmt.Sprintf("Route not found : %s", name))
+}
+
+func (sps *StoredProcedures) GetRoutes() map[string]*routing.Route {
+	return sps.routes
 }

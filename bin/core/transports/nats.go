@@ -2,6 +2,7 @@ package transports
 
 import (
 	"fmt"
+	"github.com/babbageLabs/brinch/bin/core/types"
 	"github.com/nats-io/nats.go"
 	"time"
 )
@@ -56,24 +57,24 @@ func (nts *Nats) Publish(subject string, msg []byte) (bool, error) {
 	return true, nil
 }
 
-func (nts *Nats) Exec(subject string, msg []byte, meta *MetaData) (*Response, error) {
+func (nts *Nats) Exec(subject string, msg []byte, meta *types.MetaData) (*types.Response, error) {
 	switch nts.mode {
 	case Request:
 		res, err := nts.Request(subject, msg)
 		if err != nil {
-			return &Response{}, err
+			return &types.Response{}, err
 		}
-		return &Response{
-			meta: meta,
-			data: res.Data,
+		return &types.Response{
+			Meta: meta,
+			Data: res.Data,
 		}, nil
 	case Publish:
 		_, err := nts.Publish(subject, msg)
 		if err != nil {
-			return &Response{}, err
+			return nil, err
 		}
-		return &Response{}, nil
+		return &types.Response{}, nil
 	default:
-		return &Response{}, fmt.Errorf("transport.NATS.mode is not configured")
+		return nil, fmt.Errorf("transport.NATS.mode is not configured")
 	}
 }
