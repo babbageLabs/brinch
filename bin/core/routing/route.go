@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/babbageLabs/brinch/bin/core/methods"
 	"github.com/babbageLabs/brinch/bin/core/types"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 const (
@@ -28,10 +30,31 @@ type Route struct {
 	ValidateRequest  bool
 	ValidateResponse bool
 	Transport        *types.ITransport
+	context          *gin.Context
+	method           string // POST, GET, PUT etc
+	SuccessCode      int
+}
+
+func (route *Route) GetMethod() string {
+	if route.method != "" {
+		return route.Name
+	}
+	return http.MethodPost
+}
+
+func (route *Route) GetResponseCode() int {
+	if route.SuccessCode != 0 {
+		return route.SuccessCode
+	}
+	return http.StatusOK
 }
 
 func (route *Route) GetName() (string, error) {
 	return route.Name, nil
+}
+
+func (route *Route) SetContext(context *gin.Context) {
+	route.context = context
 }
 
 func (route *Route) AddParam(param types.Param) (bool, error) {
@@ -159,9 +182,3 @@ func (param *Param) GetMode() (types.ParameterMode, error) {
 func (param *Param) Marshal() ([]byte, error) {
 	return nil, nil
 }
-
-// ################################ StoredProcedures
-
-//func (route *Route) Validate(params []IValidatable) (bool, error) {
-//	return Validate(params)
-//}

@@ -9,8 +9,9 @@ import (
 )
 
 type AppConfig struct {
-	Name string
-	Env  string
+	Name    string `yaml:"name"`
+	Env     string `yaml:"env"`
+	Address string `yaml:"address"`
 }
 
 type Config struct {

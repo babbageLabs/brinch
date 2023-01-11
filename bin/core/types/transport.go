@@ -1,6 +1,7 @@
 package types
 
 type MetaData struct {
+	ResponseCode int
 }
 
 type Response struct {

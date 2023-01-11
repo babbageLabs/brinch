@@ -19,7 +19,7 @@ func Call(callable types.ICallable) (*types.Response, error) {
 	if callable.MustValidateRequest() {
 		_, err := Validate(params)
 		if err != nil {
-			return &types.Response{}, err
+			return nil, err
 		}
 	}
 
@@ -31,7 +31,7 @@ func Call(callable types.ICallable) (*types.Response, error) {
 	meta := &types.MetaData{}
 	res, err := transport.Exec(subject, msg, meta)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
 
 	if callable.MustValidateResponse() {
